@@ -6,7 +6,7 @@ void ft_error_handler(char *s, int errorcode)
 	ft_printf("%s",s);
 	exit(errorcode);
 }
-
+//
 
 void ft_getinput(t_mini_sh sh)
 {
