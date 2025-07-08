@@ -1,6 +1,6 @@
 NAME = minishell
 
-SRC = main.c
+SRC = main.c tokenizer.c parsing.c
 HDR = includes/minishell.h
 
 CC = cc
