@@ -46,12 +46,12 @@ typedef struct s_mini_sh
 	int			input;
 	pid_t		mypid;
 	int			myfd;
+//	int			status;
 
 }	t_mini_sh;
 
 
-void	ft_error_handler(char *s, int errorcode);
-void	ft_getinput(t_mini_sh sh);
+void	ft_getinput(t_mini_sh*sh);
 Token	*tokenizer(char	*line);
 ASTNode	*parse_command(Token **tokens);
 

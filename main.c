@@ -1,13 +1,35 @@
 #include "includes/minishell.h"
 
-
-void ft_error_handler(char *s, int errorcode)
+void	ft_excecute(ASTNode*command, t_mini_sh*sh)
 {
-	ft_printf("%s",s);
-	exit(errorcode);
+	int	status;
+	char *path;
+
+	status = 0;
+	path = ft_strdup("/bin/");
+	path = ft_strjoin(path, command->args[0]);
+
+	sh->mypid = fork();
+	if (sh->mypid == -1)
+	{
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+	else if (sh->mypid == 0)
+	{
+			if (execve(path, command->args, NULL) == -1)
+			{
+				printf("%s: command not found\n",command->args[0]);
+				free(path);
+				exit(EXIT_FAILURE);
+			}
+	}
+	else
+		waitpid(sh->mypid, &status, 0);
 }
 
-void ft_getinput(t_mini_sh sh)
+
+void ft_getinput(t_mini_sh*sh)
 {
 	char	*input;
 
@@ -16,7 +38,7 @@ void ft_getinput(t_mini_sh sh)
 	{
 		input = readline(GRN "Minishell$> " NRM);
 		if (!input)
-			ft_error_handler("input error",1);
+			perror("input error");
 		if (input[0] == ' ' || input[0] =='\0')
 		{
 			free(input);
@@ -26,6 +48,7 @@ void ft_getinput(t_mini_sh sh)
 		{
 			add_history(input);
 			ft_printf("Has escrito " BLU "%s\n" NRM,input);
+		
 
 			Token *tokens = tokenizer(input);
 			Token *tokcpy = tokens;
@@ -45,13 +68,13 @@ void ft_getinput(t_mini_sh sh)
 				args++;
 			}
 			printf("}\n");
+
+			ft_excecute(node, sh);
 		}
 	}
 
 
 }
-
-
 
 //int	main(int argc, char**argv,char **env)
 int	main(void)
@@ -61,6 +84,6 @@ int	main(void)
 	shell.mypid = getpid();
 	shell.input = 0;
 	shell.myfd = 1;	
-	ft_getinput(shell);
+	ft_getinput(&shell);
 
 }
