@@ -51,6 +51,8 @@ void ft_getinput(t_mini_sh*sh)
 		
 
 			Token *tokens = tokenizer(input);
+			if (!tokens)
+				continue ;
 			Token *tokcpy = tokens;
 			while (tokcpy)
 			{
@@ -64,7 +66,7 @@ void ft_getinput(t_mini_sh*sh)
 			printf("{ ");
 			while(args && *args)
 			{
-				printf("'%s' ", *args);
+				printf("\"%s\" ", *args);
 				args++;
 			}
 			printf("}\n");

@@ -18,11 +18,13 @@ void	handle_quotes(char *line, int *i, Token **head, Token **last)
 	char	*word;
 	char	*tmp;
 	char	c[2];
+	char	quote_char;
 	Token	*tok;
 
 	word = ft_strdup("");
+	quote_char = line[*i];
 	(*i)++;
-	while (line[*i] && line[*i] != '"')
+	while (line[*i] && line[*i] != quote_char)
 	{
 		c[0] = line[*i];
 		c[1] = '\0';
@@ -31,7 +33,7 @@ void	handle_quotes(char *line, int *i, Token **head, Token **last)
 		free(tmp);
 		(*i)++;
 	}
-	if (line[*i] == '"')
+	if (line[*i] == quote_char)
 		(*i)++;
 	tok = new_token(TOKEN_WORD, word);
 	if (!*head)
@@ -81,27 +83,62 @@ void	handle_word(char *line, int *i, Token **head, Token **last)
 	*last = tok;
 }
 
+int	check_quotes(char *line)
+{
+	int	i;
+	int	in_single;
+	int	in_double;
+
+	i = 0;
+	in_single = 0;
+	in_double = 0;
+	while (line[i])
+	{
+		if (line[i] == ';' || line[i] == '\\' || line[i] == '&')
+		{
+			if (!in_single && !in_double)
+			{
+				printf("Character not supported: '%c'\n", line[i]);
+				return (2);
+			}
+		}
+		if (line[i] == '\'' && !in_double)
+			in_single = !in_single;
+		else if (line[i] == '"' && !in_single)
+			in_double = !in_double;
+		i++;
+	}
+	return (in_single || in_double);
+}
+
 Token	*tokenizer(char *line)
 {
 	int	i;
+	int	checker;
 	Token	*head;
 	Token	*last;
 
 	i = 0;
 	head = NULL;
 	last = NULL;
-	while (line[i])
+	checker = check_quotes(line);
+	if (checker == 0)
 	{
-		if (line[i] == '"')
-			handle_quotes(line, &i, &head, &last);
-		else if (line[i] == '|')
-			handle_pipe(&i, &head, &last);
-		//else if (line[i] == '>' || line[i] == '<')
-		//	handle_redirection(line, &i, &head, &last);
-		else if (line[i] == ' ')
-			i++;
-		else
-			handle_word(line, &i, &head, &last);
+		while (line[i])
+		{
+			if (line[i] == '"' || line[i] == '\'')
+				handle_quotes(line, &i, &head, &last);
+			else if (line[i] == '|')
+				handle_pipe(&i, &head, &last);
+			//else if (line[i] == '>' || line[i] == '<')
+			//	handle_redirection(line, &i, &head, &last);
+			else if (line[i] == ' ')
+				i++;
+			else
+				handle_word(line, &i, &head, &last);
+		}
 	}
+	else if (checker == 1)
+		printf("Unclosed quotes\n");
 	return (head);
 }
