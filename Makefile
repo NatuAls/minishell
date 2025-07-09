@@ -21,10 +21,10 @@ makelibft:
 $(NAME): $(OBJ) $(libft)
 			$(CC) $(FLAGS) $(OBJ) $(LIBFT) -lreadline -o $(NAME)
 clean: 
-	 $(RM) $(OBJS)
+	 $(RM) $(OBJ)
 	 make clean -C ./libft
 fclean:
-			$(RM) $(OBJS)
+			$(RM) $(OBJ)
 			$(RM) $(NAME)
 			make fclean -C ./libft
 
