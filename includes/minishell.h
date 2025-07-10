@@ -44,9 +44,10 @@ typedef struct s_ast
 typedef struct s_mini_sh
 {
 	int			input;
-	pid_t		mypid;
+	pid_t			mypid;
 	int			myfd;
 //	int			status;
+	char 			**envi;
 
 }	t_mini_sh;
 
