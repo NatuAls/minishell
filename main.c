@@ -16,6 +16,7 @@ void	ft_excecute(ASTNode*command, t_mini_sh*sh)
 	}
 	else if (sh->mypid == 0)
 	{
+		//comentarioooooo
 		if (execve(path, command->args, NULL) == -1)
 		{
 			printf("%s: No such file or directory\n",path);
@@ -177,7 +178,7 @@ void ft_getinput(t_mini_sh*sh)
 
 			printf("*-*" BLU "%s" NRM "*-*\n",node->args[0]);
 		//	if(node->args[0][0] == '/')   para otras opciones
-			if(ft_strncmp("./", node->args[0], 2) == 0)
+			if(ft_strchr(node->args[0], '/') != NULL)
 				ft_excecute(node, sh);
 			else
 				ft_excecute_path(node, sh);				
