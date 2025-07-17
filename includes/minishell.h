@@ -11,11 +11,13 @@
 
 typedef enum 
 {
+	TOKEN_NONE,
 	TOKEN_WORD,
 	TOKEN_PIPE,
-	TOKEN_REDIR_OUT,
-	TOKEN_REDIR_IN,
-	TOKEN_REDIR_APPEND,
+	TOKEN_REDIR_OUT,    //>
+	TOKEN_REDIR_IN,     //<
+	TOKEN_REDIR_APPEND, //>>
+	TOKEN_HEREDOC,      //<<
 	TOKEN_EOF
 }	TokenType;
 
@@ -37,6 +39,8 @@ typedef struct s_ast
 {
 	NodeType	type;
 	char		**args;
+	char		*filename;
+	TokenType	redir_type;
 	struct s_ast	*right;
 	struct s_ast	*left;
 }	ASTNode;

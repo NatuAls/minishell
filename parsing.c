@@ -13,7 +13,7 @@ int	count_words(Token *tokens)
 	return (i);
 }
 
-ASTNode	*new_ASTNode(NodeType type, char **args)
+ASTNode	*new_ASTNode(NodeType type, char **args, char *filename, TokenType redir_type)
 {
 	ASTNode	*new;
 
@@ -22,6 +22,8 @@ ASTNode	*new_ASTNode(NodeType type, char **args)
 		return (NULL);
 	new->type = type;
 	new->args = args;
+	new->filename = filename;
+	new->redir_type = redir_type;
 	new->right = NULL;
 	new->left = NULL;
 	return (new);
@@ -45,5 +47,5 @@ ASTNode	*parse_command(Token **tokens)
 		i++;
 	}
 	args[i] = NULL;
-	return (new_ASTNode(NODE_COMMAND, args));
+	return (new_ASTNode(NODE_COMMAND, args, NULL, TOKEN_NONE));
 }

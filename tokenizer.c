@@ -47,16 +47,42 @@ void	handle_pipe(int *i, Token **head, Token **last)
 {
 	Token	*tok;
 
-	tok = new_token(TOKEN_PIPE, "|");
 	if (!*head)
-		*head = tok;
+	{
+		perror("minishell: syntax error near unexpected token '|'");
+		exit(258);
+	}
+	tok = new_token(TOKEN_PIPE, "|");
+	(*last)->next = tok;
+	*last = tok;
+	(*i)++;
+}
+
+void	handle_redirection(char *line, int *i, Token **head, Token **last)
+{
+	Token	*tok;
+	
+	if (line[*i] == '<' && line[*i + 1] == '<')
+	{
+		tok = new_token(TOKEN_HEREDOC, "<<");
+		(*i)++;
+	}
+	else if (line[*i] == '<')
+		tok = new_token(TOKEN_REDIR_IN, "<");
+	else if (line[*i] == '>' && line[*i + 1] == '>')
+	{
+		tok = new_token(TOKEN_REDIR_APPEND, ">>");
+		(*i)++;
+	}
+	else
+		tok = new_token(TOKEN_REDIR_OUT, ">");
+	if (!*head)
+		*head = tok;	
 	else
 		(*last)->next = tok;
 	*last = tok;
 	(*i)++;
 }
-
-//void	handle_redirection(char *line, int *i, Token **head, Token **last)
 
 void	handle_word(char *line, int *i, Token **head, Token **last)
 {
@@ -130,8 +156,8 @@ Token	*tokenizer(char *line)
 				handle_quotes(line, &i, &head, &last);
 			else if (line[i] == '|')
 				handle_pipe(&i, &head, &last);
-			//else if (line[i] == '>' || line[i] == '<')
-			//	handle_redirection(line, &i, &head, &last);
+			else if (line[i] == '>' || line[i] == '<')
+				handle_redirection(line, &i, &head, &last);
 			else if (line[i] == ' ')
 				i++;
 			else
