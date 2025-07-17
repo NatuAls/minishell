@@ -49,3 +49,49 @@ ASTNode	*parse_command(Token **tokens)
 	args[i] = NULL;
 	return (new_ASTNode(NODE_COMMAND, args, NULL, TOKEN_NONE));
 }
+
+ASTNode *parse_redir(Token **tokens, ASTNode *left)
+{
+	ASTNode	*redir;
+	char 	*filename;
+	TokenType	redir_type;
+
+	redir_type = (*tokens)->type;
+	*tokens = (*tokens)->next;
+	if (!*tokens || (*tokens)->type != TOKEN_WORD)
+	{
+		perror("minishell: syntax error near redirection");
+		return (NULL);
+	}
+	filename = (*tokens)->value;
+	redir = new_ASTNode(NODE_REDIR, NULL, filename, redir_type);
+	redir->left = left;
+	return (redir);
+}
+
+ASTNode	*parse(Token **tokens)
+{
+	ASTNode *left;
+	ASTNode	*pipe;
+
+	left = parse_command(tokens);
+	while (*tokens)
+	{
+		if ((*tokens)->type == TOKEN_PIPE)
+		{
+			*tokens = (*tokens)->next;
+			pipe = new_ASTNode(NODE_PIPE, NULL, NULL, TOKEN_NONE);
+			pipe->left = left;
+			pipe->right = parse(tokens);
+			return (pipe);
+		}
+		else if ((*tokens)->type == TOKEN_REDIR_OUT || (*tokens)->type == TOKEN_HEREDOC || \
+		(*tokens)->type == TOKEN_REDIR_IN || (*tokens)->type == TOKEN_REDIR_APPEND)
+		{		
+			left = parse_redir(tokens, left);
+		}	
+		else
+			break ;
+	}
+	return (left);
+}

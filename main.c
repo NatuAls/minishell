@@ -138,7 +138,7 @@ void	ft_excecute_path(ASTNode*command, t_mini_sh*sh)
 void ft_getinput(t_mini_sh*sh)
 {
 	char	*input;
-	char 	**args;
+	//char 	**args;
 	(void)sh;	
 	while (1)
 	{
@@ -165,17 +165,11 @@ void ft_getinput(t_mini_sh*sh)
 				printf("TOKEN %d: %s\n", tokcpy->type, tokcpy->value);
 				tokcpy = tokcpy->next;
 			}
-			ASTNode *node = parse_command(&tokens);
-			printf("ASTNode %d: ", node->type);
-			args = node->args;
-			printf("{ ");
-			while(args && *args)
-			{
-				printf("\"%s\" ", *args);
-				args++;
-			}
-			printf("}\n");
+			ASTNode *node = parse(&tokens);
+			print_ast(node, 0);
 
+			if (node->type != NODE_COMMAND)
+				node = node->left;
 			printf("*-*" BLU "%s" NRM "*-*\n",node->args[0]);
 		//	if(node->args[0][0] == '/')   para otras opciones
 			if(ft_strchr(node->args[0], '/') != NULL)

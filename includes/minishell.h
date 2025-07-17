@@ -58,9 +58,9 @@ typedef struct s_mini_sh
 
 void	ft_getinput(t_mini_sh*sh);
 Token	*tokenizer(char	*line);
-ASTNode	*parse_command(Token **tokens);
+ASTNode	*parse(Token **tokens);
 
-
+void	print_ast(ASTNode *node, int level);
 
 
 
