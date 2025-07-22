@@ -37,6 +37,8 @@ ASTNode	*parse_command(Token **tokens)
 
 	i = 0;
 	size = count_words(*tokens);
+	if (!size)
+		return (NULL);
 	args = malloc(sizeof(char *) * (size + 1));
 	if (!args)
 		return (NULL);
@@ -66,32 +68,47 @@ ASTNode *parse_redir(Token **tokens, ASTNode *left)
 	filename = (*tokens)->value;
 	redir = new_ASTNode(NODE_REDIR, NULL, filename, redir_type);
 	redir->left = left;
+	*tokens = (*tokens)->next;
 	return (redir);
+}
+
+int	is_redir(TokenType type)
+{
+	int	result;
+
+	result = 0;
+	if (type == TOKEN_REDIR_OUT)
+		result = 1;
+	else if (type == TOKEN_HEREDOC)
+		result = 1;
+	else if (type == TOKEN_REDIR_IN)
+		result = 1;
+	else if (type == TOKEN_REDIR_APPEND)
+		result = 1;
+	return (result);
 }
 
 ASTNode	*parse(Token **tokens)
 {
-	ASTNode *left;
 	ASTNode	*pipe;
-
+	ASTNode	*left;
+	
 	left = parse_command(tokens);
-	while (*tokens)
+	while (*tokens && is_redir((*tokens)->type))	
 	{
-		if ((*tokens)->type == TOKEN_PIPE)
-		{
-			*tokens = (*tokens)->next;
-			pipe = new_ASTNode(NODE_PIPE, NULL, NULL, TOKEN_NONE);
-			pipe->left = left;
-			pipe->right = parse(tokens);
-			return (pipe);
-		}
-		else if ((*tokens)->type == TOKEN_REDIR_OUT || (*tokens)->type == TOKEN_HEREDOC || \
-		(*tokens)->type == TOKEN_REDIR_IN || (*tokens)->type == TOKEN_REDIR_APPEND)
-		{		
-			left = parse_redir(tokens, left);
-		}	
-		else
-			break ;
+		left = parse_redir(tokens, left);
+		if (!left)
+			return (NULL);
+	}
+	if (*tokens && (*tokens)->type == TOKEN_PIPE)
+	{
+		*tokens = (*tokens)->next;
+		pipe = new_ASTNode(NODE_PIPE, NULL, NULL, TOKEN_NONE);
+		pipe->left = left;
+		pipe->right = parse(tokens);
+		if (!pipe->right)
+			return (NULL);
+		return (pipe);
 	}
 	return (left);
 }
