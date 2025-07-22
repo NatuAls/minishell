@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/22 14:48:12 by nalesso           #+#    #+#             */
+/*   Updated: 2025/07/22 16:19:50 by nalesso          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "includes/minishell.h"
 
 void	ft_excecute(ASTNode*command, t_mini_sh*sh)
@@ -58,6 +70,8 @@ char *ft_get_path(ASTNode*command) // intento de refactor
 	int	len;
 	int	count;
 	char 	*to_exec;
+	char	*result;
+	char	*tmp;
 
 	path = getenv("PATH");
 	path_splited = ft_split(path,':');
@@ -78,14 +92,18 @@ char *ft_get_path(ASTNode*command) // intento de refactor
 	
 	while (count < len)
 	{
+		tmp = path_splited[count];
 		path_splited[count] = ft_strjoin(path_splited[count], to_exec);
+		free(tmp);
 		if (ft_check_access(path_splited[count]) == 1)
 		{
 			
 			printf("command FFOUND \n"); // eliminar
 			printf("*%d*\n",count); // a eliminar
+			result = ft_strdup(path_splited[count]);
+			ft_free_strs(path_splited);
 			free(to_exec);
-			return (path_splited[count]);
+			return (result);
 		}
 /*		else  
 		{
@@ -98,6 +116,8 @@ char *ft_get_path(ASTNode*command) // intento de refactor
 		printf("*%s*\n",path_splited[count]); // a eliminar
 		count++;					
 	}
+	free(to_exec);
+	ft_free_strs(path_splited);
 	return (NULL);
 //	free(to_exec);
 //	return (path_splited[count]); // solo para que devuelva algo  
@@ -138,8 +158,13 @@ void	ft_excecute_path(ASTNode*command, t_mini_sh*sh)
 void ft_getinput(t_mini_sh*sh)
 {
 	char	*input;
+	Token	*tokens;
+	Token	*tokcpy;
+	ASTNode	*node;
+	ASTNode	*head;
 	//char 	**args;
-	(void)sh;	
+	(void)sh;
+	node = NULL;
 	while (1)
 	{
 		input = readline(GRN "Minishell$>☠ " NRM);
@@ -149,36 +174,56 @@ void ft_getinput(t_mini_sh*sh)
 		{
 			free(input);
 			ft_printf("");
+			continue ;
 		}
-		else 
-		{
-			add_history(input);
-			ft_printf("Has escrito " BLU "%s\n" NRM,input);
+		add_history(input);
+		ft_printf("Has escrito " BLU "%s\n" NRM,input);
 		
 
-			Token *tokens = tokenizer(input);
-			if (!tokens)
-				continue ;
-			Token *tokcpy = tokens;
-			while (tokcpy)
-			{
-				printf("TOKEN %d: %s\n", tokcpy->type, tokcpy->value);
-				tokcpy = tokcpy->next;
-			}
-			ASTNode *node = parse(&tokens);
-			print_ast(node, 0);
-
-			if (node->type != NODE_COMMAND)
-				node = node->left;
-			printf("*-*" BLU "%s" NRM "*-*\n",node->args[0]);
-		//	if(node->args[0][0] == '/')   para otras opciones
-			if(ft_strchr(node->args[0], '/') != NULL)
-				ft_excecute(node, sh);
-			else
-				ft_excecute_path(node, sh);				
+		tokens = tokenizer(input);
+		if (!tokens)
+		{
+			free(input);
+			continue ;
 		}
+		tokcpy = tokens;
+		while (tokcpy)
+		{
+			printf("TOKEN %d: %s\n", tokcpy->type, tokcpy->value);
+			tokcpy = tokcpy->next;
+		}
+		if (!ft_strncmp(tokens->value, "exit", 4))
+		{
+			ft_free_tokens(tokens);
+			if (node)
+				ft_freeAST(node);
+			free(input);
+			rl_clear_history();
+			exit(0);
+		}
+		tokcpy = tokens;
+		node = parse(&tokens);
+		if (!node)
+		{
+			ft_free_tokens(tokcpy);
+			free(input);
+			continue ;
+		}
+		print_ast(node, 0);
+		head = node;
+		if (node->type != NODE_COMMAND)
+			node = node->left;
+		printf("*-*" BLU "%s" NRM "*-*\n",node->args[0]);
+	//	if(node->args[0][0] == '/')   para otras opciones
+		if(ft_strchr(node->args[0], '/') != NULL)
+			ft_excecute(node, sh);
+		else
+			ft_excecute_path(node, sh);				
+		ft_free_tokens(tokcpy);
+		ft_freeAST(head);
+		node = NULL;
+		free(input);
 	}
-
 
 }
 

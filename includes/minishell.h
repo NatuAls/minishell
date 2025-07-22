@@ -60,6 +60,10 @@ void	ft_getinput(t_mini_sh*sh);
 Token	*tokenizer(char	*line);
 ASTNode	*parse(Token **tokens);
 
+void	ft_freeAST(ASTNode *head);
+void	ft_free_tokens(Token *tokens);
+void	ft_free_strs(char **strs);
+
 void	print_ast(ASTNode *node, int level);
 
 

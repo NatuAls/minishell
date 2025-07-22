@@ -52,7 +52,7 @@ void	handle_pipe(int *i, Token **head, Token **last)
 		perror("minishell: syntax error near unexpected token '|'");
 		exit(258);
 	}
-	tok = new_token(TOKEN_PIPE, "|");
+	tok = new_token(TOKEN_PIPE, ft_strdup("|"));
 	(*last)->next = tok;
 	*last = tok;
 	(*i)++;
@@ -64,18 +64,18 @@ void	handle_redirection(char *line, int *i, Token **head, Token **last)
 	
 	if (line[*i] == '<' && line[*i + 1] == '<')
 	{
-		tok = new_token(TOKEN_HEREDOC, "<<");
+		tok = new_token(TOKEN_HEREDOC, ft_strdup("<<"));
 		(*i)++;
 	}
 	else if (line[*i] == '<')
-		tok = new_token(TOKEN_REDIR_IN, "<");
+		tok = new_token(TOKEN_REDIR_IN, ft_strdup("<"));
 	else if (line[*i] == '>' && line[*i + 1] == '>')
 	{
-		tok = new_token(TOKEN_REDIR_APPEND, ">>");
+		tok = new_token(TOKEN_REDIR_APPEND, ft_strdup(">>"));
 		(*i)++;
 	}
 	else
-		tok = new_token(TOKEN_REDIR_OUT, ">");
+		tok = new_token(TOKEN_REDIR_OUT, ft_strdup(">"));
 	if (!*head)
 		*head = tok;	
 	else
