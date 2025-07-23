@@ -56,9 +56,11 @@ typedef struct s_mini_sh
 }	t_mini_sh;
 
 
-void	ft_getinput(t_mini_sh*sh);
+void	ft_getinput(t_mini_sh *sh);
 Token	*tokenizer(char	*line);
 ASTNode	*parse(Token **tokens);
+ASTNode	*ft_apply_redirection(ASTNode *node);
+void	ft_excecute(ASTNode *node, t_mini_sh *sh);
 
 void	ft_freeAST(ASTNode *head);
 void	ft_free_tokens(Token *tokens);
