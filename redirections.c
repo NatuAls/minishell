@@ -1,5 +1,53 @@
 #include "includes/minishell.h"
 
+void	child_heredoc(int *fd, char *delimiter)
+{
+	char *line;
+
+	close(fd[0]);
+	while (1)
+	{
+		line = readline("> ");
+		if (!ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1))
+		{
+			free(line);
+			break ;
+		}
+		write(fd[1], line, ft_strlen(line));
+		write(fd[1], "\n", 1);
+		free(line);
+	}
+	close(fd[1]);
+	exit(EXIT_SUCCESS);
+}
+
+int	ft_handle_heredoc(char *filename)
+{
+	int	pid;
+	int	fd[2];
+	int	status;
+
+	if (pipe(fd) == -1)
+	{
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+	else if (pid == 0)
+		child_heredoc(fd, filename);
+	else
+	{
+		close(fd[1]);
+		waitpid(pid, &status, 0);
+	}
+	return (fd[0]);
+}
+
 ASTNode	*ft_apply_redirection(ASTNode *node)
 {
 	int	fd;
@@ -10,6 +58,8 @@ ASTNode	*ft_apply_redirection(ASTNode *node)
 		fd = open(node->filename, O_RDONLY);
 	else if (node->redir_type == TOKEN_REDIR_APPEND)
 		fd = open(node->filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
+	else if (node->redir_type == TOKEN_HEREDOC)
+		fd = ft_handle_heredoc(node->filename);
 	if (fd < 0)
 	{
 		printf("%s: No such file or directory\n", node->filename);

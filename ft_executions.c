@@ -78,6 +78,14 @@ char *ft_get_path(ASTNode*command) // intento de refactor
 //	return (path_splited[count]); // solo para que devuelva algo  
 }
 
+void	ft_put_error(char *prefix, char *msg)
+{
+	write(2, prefix, ft_strlen(prefix));
+	write(2, ": ", 2);
+	write(2, msg, ft_strlen(msg));
+	write(2, "\n", 1);
+}
+
 void	ft_excecute(ASTNode *node, t_mini_sh *sh)
 {
 	int	status;
@@ -85,10 +93,7 @@ void	ft_excecute(ASTNode *node, t_mini_sh *sh)
 
 	sh->mypid = fork();
 	if (sh->mypid == -1)
-	{		
-		perror("fork");
 		exit(EXIT_FAILURE);
-	}
 	else if (sh->mypid == 0)
 	{
 		if (node->type == NODE_REDIR)
@@ -99,11 +104,16 @@ void	ft_excecute(ASTNode *node, t_mini_sh *sh)
 			path = ft_strdup(node->args[0]);
 		else
 			path = ft_get_path(node);
+		if (!path)
+		{
+			ft_put_error("Command not found", node->args[0]);
+			exit(127); //comando no encontrado
+		}
 		if (execve(path, node->args, NULL) == -1)
 		{
-			printf("%s: No such file or directory\n",path);
+			ft_put_error(path, strerror(errno));
 			free(path);
-			exit(EXIT_FAILURE);
+			exit(126); //comando no ejecutable
 		}
 	}
 	else

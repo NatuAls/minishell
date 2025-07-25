@@ -22,8 +22,7 @@ void	handle_quotes(char *line, int *i, Token **head, Token **last)
 	Token	*tok;
 
 	word = ft_strdup("");
-	quote_char = line[*i];
-	(*i)++;
+	quote_char = line[(*i)++];
 	while (line[*i] && line[*i] != quote_char)
 	{
 		c[0] = line[*i];
