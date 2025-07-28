@@ -34,9 +34,8 @@ void ft_getinput(t_mini_sh*sh)
 			continue ;
 		}
 		add_history(input);
-		ft_printf("Has escrito " BLU "%s\n" NRM,input);
 		
-
+		ft_printf("Has escrito " BLU "%s\n" NRM,input);//para debug
 		tokens = tokenizer(input);
 		if (!tokens)
 		{
@@ -46,11 +45,11 @@ void ft_getinput(t_mini_sh*sh)
 		tokcpy = tokens;
 		while (tokcpy)
 		{
-			printf("TOKEN %d: %s\n", tokcpy->type, tokcpy->value);
+			printf("TOKEN %d: %s\n", tokcpy->type, tokcpy->value);//para debug
 			tokcpy = tokcpy->next;
 		}
 
-		if (!ft_strncmp(tokens->value, "exit", 4))
+		if (!ft_strncmp(tokens->value, "exit", 4))// Comando para salir del shell
 		{
 			ft_free_tokens(tokens);
 			if (node)
@@ -71,8 +70,11 @@ void ft_getinput(t_mini_sh*sh)
 		print_ast(node, 0);
 		head = node;
 		if (node->type == NODE_PIPE)
-			node = node->left;
-		ft_excecute(node, sh);
+		{	//node = node->left;
+			ft_execute_pipe(node, sh);
+		}
+		else
+			ft_excecute(node, sh);
 		//printf("*-*" BLU "%s" NRM "*-*\n",node->args[0]);
 		//if(node->args[0][0] == '/')   para otras opciones
 		ft_free_tokens(tokcpy);

@@ -68,7 +68,7 @@ void	ft_free_strs(char **strs);
 
 void	print_ast(ASTNode *node, int level);
 
-
+void ft_execute_pipe(ASTNode *node, t_mini_sh *sh);
 
 #	define NRM  "\x1B[0m"
 #	define RED  "\x1B[31m"
