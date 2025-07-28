@@ -99,6 +99,6 @@ int	main(int argc, char**argv,char **env)
 		shell.envi = env;
 		ft_getinput(&shell);
 	}
-
+//echo hola mundo | tr a-z A-Z | rev  test comando de ejemplo
 	return (1);
 }
