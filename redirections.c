@@ -62,6 +62,7 @@ ASTNode	*ft_apply_redirection(ASTNode *node)
 {
 	int	fd;
 
+	fd = -1;
 	if (node->redir_type == TOKEN_REDIR_OUT)
 		fd = open(node->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	else if (node->redir_type == TOKEN_REDIR_IN)
