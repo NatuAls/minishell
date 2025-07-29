@@ -42,15 +42,10 @@ void	handle_quotes(char *line, int *i, Token **head, Token **last)
 	*last = tok;
 }
 
-void	handle_pipe(int *i, Token **head, Token **last)
+void	handle_pipe(int *i, Token **last)
 {
 	Token	*tok;
 
-	if (!*head)
-	{
-		perror("minishell: syntax error near unexpected token '|'");
-		exit(258);
-	}
 	tok = new_token(TOKEN_PIPE, ft_strdup("|"));
 	(*last)->next = tok;
 	*last = tok;
@@ -146,6 +141,11 @@ Token	*tokenizer(char *line)
 	i = 0;
 	head = NULL;
 	last = NULL;
+	if (line[0] == '|')
+	{
+		printf("minishell: syntax error near unexpected token '|'\n");
+		return (NULL);
+	}
 	checker = check_quotes(line);
 	if (checker == 0)
 	{
@@ -154,7 +154,7 @@ Token	*tokenizer(char *line)
 			if (line[i] == '"' || line[i] == '\'')
 				handle_quotes(line, &i, &head, &last);
 			else if (line[i] == '|')
-				handle_pipe(&i, &head, &last);
+				handle_pipe(&i, &last);
 			else if (line[i] == '>' || line[i] == '<')
 				handle_redirection(line, &i, &head, &last);
 			else if (line[i] == ' ')

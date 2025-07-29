@@ -24,6 +24,7 @@ ASTNode	*new_ASTNode(NodeType type, char **args, char *filename, TokenType redir
 	new->args = args;
 	new->filename = filename;
 	new->redir_type = redir_type;
+	new->heredoc_fd = -1;
 	new->right = NULL;
 	new->left = NULL;
 	return (new);
@@ -62,7 +63,8 @@ ASTNode *parse_redir(Token **tokens, ASTNode *left)
 	*tokens = (*tokens)->next;
 	if (!*tokens || (*tokens)->type != TOKEN_WORD)
 	{
-		perror("minishell: syntax error near redirection");
+		printf("minishell: syntax error near redirection\n");
+		ft_freeAST(left);
 		return (NULL);
 	}
 	filename = ft_strdup((*tokens)->value);
@@ -107,7 +109,10 @@ ASTNode	*parse(Token **tokens)
 		pipe->left = left;
 		pipe->right = parse(tokens);
 		if (!pipe->right)
+		{
+			ft_freeAST(pipe);
 			return (NULL);
+		}
 		return (pipe);
 	}
 	return (left);
