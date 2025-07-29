@@ -28,7 +28,7 @@ void ft_execute_pipe(ASTNode *node, t_mini_sh *sh)
         close(fd[1]);
         if (node->left->type == NODE_PIPE)
             ft_execute_pipe(node->left, sh); //recursivamente si hay multiples pipes
-        else 
+        else
             ft_excecute(node->left, sh);
         exit(EXIT_SUCCESS);
     }
@@ -46,7 +46,10 @@ void ft_execute_pipe(ASTNode *node, t_mini_sh *sh)
         dup2(fd[0], STDIN_FILENO);
         close(fd[1]);
         close(fd[0]);
-        ft_excecute(node->right, sh);
+	if (node->right->type == NODE_PIPE)
+	    ft_execute_pipe(node->right, sh);
+	else
+            ft_excecute(node->right, sh);
         exit(EXIT_SUCCESS);
     }
 
