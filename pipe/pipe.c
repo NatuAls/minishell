@@ -7,7 +7,7 @@ void ft_execute_pipe(ASTNode *node, t_mini_sh *sh)
     pid_t   pid2;
 
     pipe(fd);
-    if (node->type != NODE_PIPE || !node || !node->left || !node->right )
+    if (node->type != NODE_PIPE || !node)
     {
         printf("Error: NODE_PIPE \n");
         return;
@@ -37,20 +37,22 @@ void ft_execute_pipe(ASTNode *node, t_mini_sh *sh)
     // que ejecutará el comando a la derecha del pipe
     // y redirigir su entrada estándar desde el pipe
     pid2 = fork();
-    if (pid2 < 0) {
+    if (pid2 < 0) 
+		{
         perror("fork error");
         return;
     }
 
-    if (pid2 == 0) {
+    if (pid2 == 0)
+		 {
         dup2(fd[0], STDIN_FILENO);
         close(fd[1]);
         close(fd[0]);
-	if (node->right->type == NODE_PIPE)
-	    ft_execute_pipe(node->right, sh);
-	else
-            ft_excecute(node->right, sh);
-        exit(EXIT_SUCCESS);
+				if (node->right->type == NODE_PIPE)
+					ft_execute_pipe(node->right, sh);
+				else
+					ft_excecute(node->right, sh);
+       exit(EXIT_SUCCESS);
     }
 
     close(fd[0]);
