@@ -41,6 +41,7 @@ typedef struct s_ast
 	char		**args;
 	char		*filename;
 	TokenType	redir_type;
+	int		heredoc_fd;
 	struct s_ast	*right;
 	struct s_ast	*left;
 }	ASTNode;
@@ -60,11 +61,14 @@ void	ft_getinput(t_mini_sh *sh);
 Token	*tokenizer(char	*line);
 ASTNode	*parse(Token **tokens);
 ASTNode	*ft_apply_redirection(ASTNode *node);
+void	expand_heredocs(ASTNode *node);
 void	ft_excecute(ASTNode *node, t_mini_sh *sh);
 
 void	ft_freeAST(ASTNode *head);
 void	ft_free_tokens(Token *tokens);
 void	ft_free_strs(char **strs);
+
+void	ft_put_error(char *prefix, char *msg);
 
 void	print_ast(ASTNode *node, int level);
 

@@ -49,7 +49,7 @@ void ft_getinput(t_mini_sh*sh)
 			tokcpy = tokcpy->next;
 		}
 
-		if (!ft_strncmp(tokens->value, "exit", 4))// Comando para salir del shell
+		if (!ft_strncmp(tokens->value, "exit", 5))// Comando para salir del shell
 		{
 			ft_free_tokens(tokens);
 			if (node)
@@ -68,6 +68,7 @@ void ft_getinput(t_mini_sh*sh)
 			continue ;
 		}
 		print_ast(node, 0);
+		expand_heredocs(node);
 		head = node;
 		if (node->type == NODE_PIPE)
 		{	//node = node->left;
