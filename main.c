@@ -24,13 +24,21 @@ void ft_getinput(t_mini_sh*sh)
 	node = NULL;
 	while (1)
 	{
-		input = readline(GRN "Minishell$>☠ " NRM);
-		if (!input)
-			perror("input error");
+		input = readline(GRN "Minishell☠$> " NRM);
+		if (!input) // Ctrl+D  hace que readline retorne NULL
+		{
+			printf("exit\n");     
+			ft_freeAST(node);
+			rl_clear_history();
+			exit(EXIT_SUCCESS);
+		}
 		if (input[0] == ' ' || input[0] =='\0')
 		{
 			free(input);
-			ft_printf("");
+			////////ft_printf("");
+			rl_on_new_line(); //mueve el cursor a una nueva linea
+    		rl_replace_line("", 0);  //borra el texto de la linea actual
+    		rl_redisplay(); //redibuja la linea actual
 			continue ;
 		}
 		add_history(input);
@@ -98,6 +106,7 @@ int	main(int argc, char**argv,char **env)
 		shell.input = 0;
 		shell.myfd = 1;	
 		shell.envi = env;
+		ft_setup_signals();
 		ft_getinput(&shell);
 	}
 //echo hola mundo | tr a-z A-Z | rev  test comando de ejemplo

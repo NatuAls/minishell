@@ -74,6 +74,12 @@ void	print_ast(ASTNode *node, int level);
 
 void ft_execute_pipe(ASTNode *node, t_mini_sh *sh);
 
+// Signal handling
+void	handle_sig_c(int sig);
+void	ft_setup_signals(void);
+
+
+
 #	define NRM  "\x1B[0m"
 #	define RED  "\x1B[31m"
 #	define GRN  "\x1B[32m"
