@@ -22,7 +22,7 @@ int ft_check_access(char *path)
 		return (-1);
 }
 
-char *ft_get_path(ASTNode*command) // intento de refactor
+char *ft_get_path(ASTNode*command, t_mini_sh *sh) // intento de refactor
 {
 	char 	*path;
 	char 	**path_splited;
@@ -32,7 +32,9 @@ char *ft_get_path(ASTNode*command) // intento de refactor
 	char	*result;
 	char	*tmp;
 
-	path = getenv("PATH");
+	path = ft_getenv_path(sh->env);
+	if (!path)
+		return (NULL);
 	path_splited = ft_split(path,':');
 	count = 0;
 	len = ft_strlen_array(path_splited);
@@ -86,11 +88,14 @@ void	ft_put_error(char *prefix, char *msg)
 	write(2, "\n", 1);
 }
 
-void	ft_excecute(ASTNode *node, t_mini_sh *sh)
+void	ft_execute(ASTNode *node, t_mini_sh *sh)
 {
 	int	status;
 	char 	*path;
+	char	**env_arr;
 
+	if (ft_execute_builting(node, sh))
+		return ;
 	sh->mypid = fork();
 	if (sh->mypid == -1)
 		exit(EXIT_FAILURE);
@@ -100,21 +105,26 @@ void	ft_excecute(ASTNode *node, t_mini_sh *sh)
 			node = ft_apply_redirection(node);
 		if (!node)
 			exit(EXIT_FAILURE);
+		if (ft_execute_builting(node, sh))
+			exit(EXIT_SUCCESS);
 		if(ft_strchr(node->args[0], '/') != NULL)
 			path = ft_strdup(node->args[0]);
 		else
-			path = ft_get_path(node);
+			path = ft_get_path(node, sh);
 		if (!path)
 		{
 			ft_put_error("Command not found", node->args[0]);
 			exit(127); //comando no encontrado
 		}
-		if (execve(path, node->args, NULL) == -1)
+		env_arr = ft_env_to_arr(sh->env);
+		if (execve(path, node->args, env_arr) == -1)
 		{
 			ft_put_error(path, strerror(errno));
 			free(path);
+			ft_free_strs(env_arr);
 			exit(126); //comando no ejecutable
 		}
+		ft_free_strs(env_arr);
 	}
 	else
 		waitpid(sh->mypid, &status, 0);

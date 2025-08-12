@@ -7,6 +7,7 @@
 #	include <readline/history.h>
 #	include <sys/wait.h>
 #	include <signal.h>
+#	include <limits.h>
 #	include "../libft/libft.h"
 
 typedef enum 
@@ -46,13 +47,20 @@ typedef struct s_ast
 	struct s_ast	*left;
 }	ASTNode;
 
+typedef struct s_env
+{
+	char		*name;
+	char		*value;
+	struct s_env	*next;
+}	t_env;
+
 typedef struct s_mini_sh
 {
 	int			input;
 	pid_t			mypid;
 	int			myfd;
 //	int			status;
-	char 			**envi;
+	t_env 			*env;
 
 }	t_mini_sh;
 
@@ -62,7 +70,7 @@ Token	*tokenizer(char	*line);
 ASTNode	*parse(Token **tokens);
 ASTNode	*ft_apply_redirection(ASTNode *node);
 void	expand_heredocs(ASTNode *node);
-void	ft_excecute(ASTNode *node, t_mini_sh *sh);
+void	ft_execute(ASTNode *node, t_mini_sh *sh);
 
 void	ft_freeAST(ASTNode *head);
 void	ft_free_tokens(Token *tokens);
@@ -72,13 +80,24 @@ void	ft_put_error(char *prefix, char *msg);
 
 void	print_ast(ASTNode *node, int level);
 
-void ft_execute_pipe(ASTNode *node, t_mini_sh *sh);
+void	ft_execute_pipe(ASTNode *node, t_mini_sh *sh);
 
-// Signal handling
+int	ft_execute_builting(ASTNode *node, t_mini_sh *sh);
+
+void	ft_echo(char **args);
+void	ft_cd(char **args);
+void	ft_pwd(void);
+void	ft_export(t_env *head, char *var);
+void	ft_unset(t_env **head, char **vars);
+void	ft_env(t_env *head);
+
+t_env	*ft_new_env(char *name, char *value);
+t_env	*ft_setenv(char **env);
+char	*ft_getenv_path(t_env *head);
+char	**ft_env_to_arr(t_env *head);
+
 void	handle_sig_c(int sig);
 void	ft_setup_signals(void);
-
-
 
 #	define NRM  "\x1B[0m"
 #	define RED  "\x1B[31m"
