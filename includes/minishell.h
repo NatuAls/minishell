@@ -61,12 +61,17 @@ typedef struct s_mini_sh
 	int			myfd;
 //	int			status;
 	t_env 			*env;
+	int			last_status;
+	Token			*tokens;
+	Token			*tokens_head;
+	ASTNode			*node;
+	ASTNode			*node_head;
 
 }	t_mini_sh;
 
 
 void	ft_getinput(t_mini_sh *sh);
-Token	*tokenizer(char	*line);
+Token	*tokenizer(char	*line, t_mini_sh *sh);
 ASTNode	*parse(Token **tokens);
 ASTNode	*ft_apply_redirection(ASTNode *node);
 void	expand_heredocs(ASTNode *node);
@@ -74,7 +79,9 @@ void	ft_execute(ASTNode *node, t_mini_sh *sh);
 
 void	ft_freeAST(ASTNode *head);
 void	ft_free_tokens(Token *tokens);
+void	ft_free_env(t_env *head);
 void	ft_free_strs(char **strs);
+void	ft_free_mini_sh(t_mini_sh *sh, int env);
 
 void	ft_put_error(char *prefix, char *msg);
 
@@ -93,7 +100,7 @@ void	ft_env(t_env *head);
 
 t_env	*ft_new_env(char *name, char *value);
 t_env	*ft_setenv(char **env);
-char	*ft_getenv_path(t_env *head);
+char	*ft_getenv(t_env *head, char *name);
 char	**ft_env_to_arr(t_env *head);
 
 void	handle_sig_c(int sig);

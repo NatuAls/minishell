@@ -3,6 +3,7 @@
 void ft_execute_pipe(ASTNode *node, t_mini_sh *sh)
 {
     int     fd[2];
+    int     status;
     pid_t   pid1;
     pid_t   pid2;
 
@@ -58,5 +59,6 @@ void ft_execute_pipe(ASTNode *node, t_mini_sh *sh)
     close(fd[0]);
     close(fd[1]);
     waitpid(pid1, NULL, 0);
-    waitpid(pid2, NULL, 0);
+    waitpid(pid2, &status, 0);
+    sh->last_status = status >> 8;
 }

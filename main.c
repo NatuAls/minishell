@@ -38,13 +38,8 @@ void ft_getinput(t_mini_sh*sh)
 {
 	//char	*prompt;
 	char	*input;
-	Token	*tokens;
-	Token	*tokcpy;
-	ASTNode	*node;
-	ASTNode	*head;
 	//char 	**args;
 
-	node = NULL;
 	while (1)
 	{
 		//prompt = ft_get_prompt();
@@ -52,7 +47,7 @@ void ft_getinput(t_mini_sh*sh)
 		if (!input) // Ctrl+D  hace que readline retorne NULL
 		{
 			printf("exit\n");
-			ft_freeAST(node);
+			ft_free_mini_sh(sh, 1);
 			rl_clear_history();
 			exit(EXIT_SUCCESS);
 		}
@@ -67,55 +62,50 @@ void ft_getinput(t_mini_sh*sh)
 		}
 		add_history(input);
 		
-		ft_printf("Has escrito " BLU "%s\n" NRM,input);//para debug
-		tokens = tokenizer(input);
-		if (!tokens)
+		//ft_printf("Has escrito " BLU "%s\n" NRM,input);//para debug
+		sh->tokens = tokenizer(input, sh);
+		if (!sh->tokens)
 		{
 			//free(prompt);
 			free(input);
 			continue ;
 		}
-		tokcpy = tokens;
-		while (tokcpy)
+		sh->tokens_head = sh->tokens;
+		while (sh->tokens)
 		{
-			printf("TOKEN %d: %s\n", tokcpy->type, tokcpy->value);//para debug
-			tokcpy = tokcpy->next;
+			printf("TOKEN %d: %s\n", sh->tokens->type, sh->tokens->value);//para debug
+			sh->tokens = sh->tokens->next;
 		}
-
-		if (!ft_strncmp(tokens->value, "exit", 5))// Comando para salir del shell
+		sh->tokens = sh->tokens_head;
+		if (!ft_strncmp(sh->tokens->value, "exit", 5))// Comando para salir del shell
 		{
-			ft_free_tokens(tokens);
-			if (node)
-				ft_freeAST(node);
+			ft_free_mini_sh(sh, 1);
 			//free(prompt);
 			free(input);
 			rl_clear_history();
 			exit(EXIT_SUCCESS);
 		}
 
-		tokcpy = tokens;
-		node = parse(&tokens);
-		if (!node)
+		sh->node = parse(&sh->tokens);
+		if (!sh->node)
 		{
-			ft_free_tokens(tokcpy);
+			ft_free_mini_sh(sh, 0);
 			//free(prompt);
 			free(input);
 			continue ;
 		}
-		print_ast(node, 0);
-		expand_heredocs(node);
-		head = node;
-		if (node->type == NODE_PIPE)
+		sh->node_head = sh->node;
+		//print_ast(node, 0);
+		expand_heredocs(sh->node);
+		if (sh->node->type == NODE_PIPE)
 		{	//node = node->left;
-			ft_execute_pipe(node, sh);
+			ft_execute_pipe(sh->node, sh);
 		}
 		else
-			ft_execute(node, sh);
+			ft_execute(sh->node, sh);
 		//printf("*-*" BLU "%s" NRM "*-*\n",node->args[0]);
 		//if(node->args[0][0] == '/')   para otras opciones
-		ft_free_tokens(tokcpy);
-		ft_freeAST(head);
-		node = NULL;
+		ft_free_mini_sh(sh, 0);
 		//free(prompt);
 		free(input);
 	}
@@ -133,6 +123,11 @@ int	main(int argc, char**argv, char **envp)
 		shell.input = 0;
 		shell.myfd = 1;	
 		shell.env = ft_setenv(envp);
+		shell.last_status = 0;
+		shell.tokens = NULL;
+		shell.tokens_head = NULL;
+		shell.node = NULL;
+		shell.node_head = NULL;
 		ft_setup_signals();
 		ft_getinput(&shell);
 	}

@@ -32,7 +32,7 @@ char *ft_get_path(ASTNode*command, t_mini_sh *sh) // intento de refactor
 	char	*result;
 	char	*tmp;
 
-	path = ft_getenv_path(sh->env);
+	path = ft_getenv(sh->env, "PATH");
 	if (!path)
 		return (NULL);
 	path_splited = ft_split(path,':');
@@ -94,6 +94,8 @@ void	ft_execute(ASTNode *node, t_mini_sh *sh)
 	char 	*path;
 	char	**env_arr;
 
+	if (node->type == NODE_COMMAND && !node->args[0][0])
+		return ;
 	if (ft_execute_builting(node, sh))
 		return ;
 	sh->mypid = fork();
@@ -126,6 +128,6 @@ void	ft_execute(ASTNode *node, t_mini_sh *sh)
 		}
 		ft_free_strs(env_arr);
 	}
-	else
-		waitpid(sh->mypid, &status, 0);
+	waitpid(sh->mypid, &status, 0);
+	sh->last_status = status >> 8;
 }

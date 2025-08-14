@@ -51,3 +51,36 @@ void	ft_free_tokens(Token *tokens)
 		free(tmp);
 	}
 }
+
+void	ft_free_env(t_env *head)
+{
+	t_env	*tmp;
+
+	while (head)
+	{
+		tmp = head;
+		head = head->next;
+		free(tmp->name);
+		if (tmp->value)
+			free(tmp->value);
+		free(tmp);
+	}
+}
+
+void	ft_free_mini_sh(t_mini_sh *sh, int env)
+{
+	if (env)
+		ft_free_env(sh->env);
+	if (sh->tokens_head)
+	{
+		ft_free_tokens(sh->tokens_head);
+		sh->tokens = NULL;
+		sh->tokens_head = NULL;
+	}
+	if (sh->node_head)
+	{
+		ft_freeAST(sh->node_head);
+		sh->node = NULL;
+		sh->node_head = NULL;
+	}
+}

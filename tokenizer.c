@@ -13,7 +13,45 @@ Token	*new_token(TokenType type, char	*value)
 	return (new);
 }
 
-void	handle_quotes(char *line, int *i, Token **head, Token **last)
+void	handle_env(char *line, int *i, char **word, t_mini_sh *sh)
+{
+	char	*name;
+	char	*tmp;
+	char	*value;
+	int	start;
+
+	start = ++(*i);
+	if (line[*i] == '?')
+	{
+		value = ft_itoa(sh->last_status);
+		tmp = ft_strjoin(*word, value);
+		free(value);
+		free(*word);
+		*word = tmp;
+		(*i)++;
+		return ;
+	}
+	while (ft_isalnum(line[*i]) || line[*i] == '_')
+		(*i)++;
+	if (start == *i)
+	{
+		tmp = ft_strjoin(*word, "$");
+		free(*word);
+		*word = tmp;
+		(*i)++;
+		return ;
+	}
+	name = ft_substr(line, start, *i - start);
+	value = ft_getenv(sh->env, name);
+	if (!value)
+		value = "";
+	tmp = ft_strjoin(*word, value);
+	free(*word);
+	*word = tmp;
+	free(name);
+}
+
+void	handle_quotes(char *line, int *i, Token **head, Token **last, t_mini_sh *sh)
 {
 	char	*word;
 	char	*tmp;
@@ -25,12 +63,17 @@ void	handle_quotes(char *line, int *i, Token **head, Token **last)
 	quote_char = line[(*i)++];
 	while (line[*i] && line[*i] != quote_char)
 	{
-		c[0] = line[*i];
-		c[1] = '\0';
-		tmp = word;
-		word = ft_strjoin(word, c);
-		free(tmp);
-		(*i)++;
+		if (line[*i] == '$' && quote_char == '"')
+			handle_env(line, i, &word, sh);
+		else
+		{
+			c[0] = line[*i];
+			c[1] = '\0';
+			tmp = word;
+			word = ft_strjoin(word, c);
+			free(tmp);
+			(*i)++;
+		}
 	}
 	if (line[*i] == quote_char)
 		(*i)++;
@@ -46,6 +89,8 @@ void	handle_pipe(int *i, Token **last)
 {
 	Token	*tok;
 
+	if (!(*last))
+		return ;
 	tok = new_token(TOKEN_PIPE, ft_strdup("|"));
 	(*last)->next = tok;
 	*last = tok;
@@ -78,7 +123,7 @@ void	handle_redirection(char *line, int *i, Token **head, Token **last)
 	(*i)++;
 }
 
-void	handle_word(char *line, int *i, Token **head, Token **last)
+void	handle_word(char *line, int *i, Token **head, Token **last, t_mini_sh *sh)
 {
 	char	*word;
 	char	*tmp;
@@ -88,17 +133,28 @@ void	handle_word(char *line, int *i, Token **head, Token **last)
 	word = ft_strdup("");
 	while (line[*i] && line[*i] != ' ')
 	{
-		c[0] = line[*i];
-		c[1] = '\0';
-		tmp = word;
-		word = ft_strjoin(word, c);
-		free(tmp);
-		(*i)++;
+		if (line[*i] == '$')
+			handle_env(line, i, &word, sh);
+		else
+		{
+			c[0] = line[*i];
+			c[1] = '\0';
+			tmp = word;
+			word = ft_strjoin(word, c);
+			free(tmp);
+			(*i)++;
+		}
 	}
+	/*if (!word || !*word)
+	{
+		free(word);
+		ft_free_tokens(*head);
+		return ;
+	}*/
 	tok = new_token(TOKEN_WORD, word);
 	if (!*head)
 		*head = tok;
-	else
+	else if (*last)
 		(*last)->next = tok;
 	*last = tok;
 }
@@ -131,7 +187,7 @@ int	check_quotes(char *line)
 	return (in_single || in_double);
 }
 
-Token	*tokenizer(char *line)
+Token	*tokenizer(char *line, t_mini_sh *sh)
 {
 	int	i;
 	int	checker;
@@ -152,7 +208,7 @@ Token	*tokenizer(char *line)
 		while (line[i])
 		{
 			if (line[i] == '"' || line[i] == '\'')
-				handle_quotes(line, &i, &head, &last);
+				handle_quotes(line, &i, &head, &last, sh);
 			else if (line[i] == '|')
 				handle_pipe(&i, &last);
 			else if (line[i] == '>' || line[i] == '<')
@@ -160,7 +216,7 @@ Token	*tokenizer(char *line)
 			else if (line[i] == ' ')
 				i++;
 			else
-				handle_word(line, &i, &head, &last);
+				handle_word(line, &i, &head, &last, sh);
 		}
 	}
 	else if (checker == 1)
