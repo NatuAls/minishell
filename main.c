@@ -12,6 +12,8 @@
 
 #include "includes/minishell.h"
 
+
+
 /*char	*ft_get_prompt()
 {
 	char	cwd[PATH_MAX];
@@ -44,6 +46,10 @@ void ft_getinput(t_mini_sh*sh)
 	{
 		//prompt = ft_get_prompt();
 		input = readline(GRN "Minishell☠$> " NRM);
+		if(g_signal_vol == SIGINT)
+			g_signal_vol = 0; // Reset signal after handling
+		else if (g_signal_vol == SIGQUIT)
+			g_signal_vol = 0;
 		if (!input) // Ctrl+D  hace que readline retorne NULL
 		{
 			printf("exit\n");
@@ -57,7 +63,7 @@ void ft_getinput(t_mini_sh*sh)
 	//		ft_printf("");
 			rl_on_new_line(); //mueve el cursor a una nueva linea
     			rl_replace_line("", 0);  //borra el texto de la linea actual
-    //			rl_redisplay(); //redibuja la linea actual
+    			rl_redisplay(); //redibuja la linea actual
 			continue ;
 		}
 		add_history(input);

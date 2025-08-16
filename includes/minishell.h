@@ -10,6 +10,8 @@
 #	include <limits.h>
 #	include "../libft/libft.h"
 
+extern volatile sig_atomic_t g_signal_vol;
+
 typedef enum 
 {
 	TOKEN_NONE,
@@ -105,6 +107,8 @@ char	**ft_env_to_arr(t_env *head);
 
 void	handle_sig_c(int sig);
 void	ft_setup_signals(void);
+void	ft_setup_own();
+
 
 #	define NRM  "\x1B[0m"
 #	define RED  "\x1B[31m"
