@@ -101,6 +101,7 @@ void	ft_execute(ASTNode *node, t_mini_sh *sh)
 		exit(EXIT_FAILURE);
 	else if (sh->mypid == 0)
 	{
+		ft_setup_own();
 		if (node->type == NODE_REDIR)
 			node = ft_apply_redirection(node);
 		if (!node)
