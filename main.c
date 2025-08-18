@@ -134,6 +134,8 @@ int	main(int argc, char**argv, char **envp)
 		shell.tokens_head = NULL;
 		shell.node = NULL;
 		shell.node_head = NULL;
+	 							 setpgid(shell_pgid, shell_pgid); // minishell es líder de grupo
+        							tcsetpgrp(0, shell_pgid);        // toma control del terminal (0 = STDIN_FILENO)
 		ft_setup_signals();
 		ft_getinput(&shell);
 	}
