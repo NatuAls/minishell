@@ -1,31 +1,46 @@
 #include "includes/minishell.h"
 
-void	ft_echo(char **args)
+int	ft_print_words(char **args, int i)
 {
-	int	i;
-	int	flag_n;
+	int	w;
 
-	i = 1;
-	flag_n = 0;
-	if (!args[1])
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		return ;
-	}
-	if (args[1] && ft_strncmp(args[1], "-n", 3) == 0)
-	{
-		i++;
-		flag_n = 1;
-		if (!args[i])
-			return ;
-	}
 	while (args[i])
 	{
-		write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
+		w = write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
+		if (w < 0)
+			return (-1);
 		if (args[i + 1])
-			write(STDOUT_FILENO, " ", 1);
+		{
+			w = write(STDOUT_FILENO, " ", 1);
+			if (w < 0)
+				return (-1);
+		}
 		i++;
 	}
-	if (flag_n == 0)
-		write(STDOUT_FILENO, "\n", 1);
+	return (0);
+}
+
+int	ft_handle_echo(char **args)
+{
+	int	i;
+	int	nflag;
+
+	i = 1;
+	nflag = 0;
+
+	while (args[i] && !ft_strncmp(args[i], "-n", 3))
+	{
+		nflag = 1;
+		i++;
+	}
+	if (ft_print_words(args, i) < 0)
+		return (1);
+	if (!nflag && write(STDOUT_FILENO, "\n", 1) < 0)
+		return (1);
+	return (0);
+}
+
+void	ft_echo(char **args, t_mini_sh *sh)
+{
+	sh->last_status = ft_handle_echo(args);
 }

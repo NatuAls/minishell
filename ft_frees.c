@@ -83,4 +83,6 @@ void	ft_free_mini_sh(t_mini_sh *sh, int env)
 		sh->node = NULL;
 		sh->node_head = NULL;
 	}
+	if (sh->input)
+		free(sh->input);
 }

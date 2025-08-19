@@ -58,7 +58,7 @@ typedef struct s_env
 
 typedef struct s_mini_sh
 {
-	int			input;
+	char			*input;
 	pid_t			mypid;
 	int			myfd;
 //	int			status;
@@ -93,12 +93,13 @@ void	ft_execute_pipe(ASTNode *node, t_mini_sh *sh);
 
 int	ft_execute_builting(ASTNode *node, t_mini_sh *sh);
 
-void	ft_echo(char **args);
-void	ft_cd(char **args);
-void	ft_pwd(void);
-void	ft_export(t_env *head, char *var);
-void	ft_unset(t_env **head, char **vars);
-void	ft_env(t_env *head);
+void	ft_echo(char **args, t_mini_sh *sh);
+void	ft_cd(char **args, t_mini_sh *sh);
+void	ft_pwd(t_mini_sh *sh);
+void	ft_export(t_env *head, char *var, t_mini_sh *sh);
+void	ft_unset(t_env **head, char **vars, t_mini_sh *sh);
+void	ft_env(t_env *head, char **args, t_mini_sh *sh);
+void	ft_bexit(t_mini_sh *sh);
 
 t_env	*ft_new_env(char *name, char *value);
 t_env	*ft_setenv(char **env);
@@ -109,14 +110,15 @@ void	handle_sig_c(int sig);
 void	ft_setup_signals(void);
 void	ft_setup_own();
 
-
-#	define NRM  "\x1B[0m"
-#	define RED  "\x1B[31m"
-#	define GRN  "\x1B[32m"
-#	define YEL  "\x1B[33m"
-#	define BLU  "\x1B[34m"
-#	define MAG  "\x1B[35m"
-#	define CYN  "\x1B[36m"
-#	define WHT  "\x1B[37m"
+#define RLNP_S "\001"
+#define RLNP_E "\002"
+#define NRM RLNP_S "\x1B[0m"  RLNP_E
+#define RED RLNP_S "\x1B[31m" RLNP_E
+#define GRN RLNP_S "\x1B[32m" RLNP_E
+#define YEL RLNP_S "\x1B[33m" RLNP_E
+#define BLU RLNP_S "\x1B[34m" RLNP_E
+#define MAG RLNP_S "\x1B[35m" RLNP_E
+#define CYN RLNP_S "\x1B[36m" RLNP_E
+#define	WHT RLNP_S "\x1B[37m" RLNP_E
 
 #endif

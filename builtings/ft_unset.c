@@ -1,32 +1,39 @@
 #include "includes/minishell.h"
 
-void	ft_unset(t_env **head, char **vars)
+void	ft_remove_env(t_env **head, char *key)
 {
-	int	i;
 	t_env	*prev;
 	t_env	*curr;
+
+	prev = NULL;
+	curr = *head;
+	while (curr)
+	{
+		if (!ft_strncmp(curr->name, key, ft_strlen(key) + 1))
+		{
+			if (prev)
+				prev->next = curr->next;
+			else
+				*head = (*head)->next;
+			free(curr->name);
+			free(curr->value);
+			free(curr);
+			break ;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
+}
+
+void	ft_unset(t_env **head, char **vars, t_mini_sh *sh)
+{
+	int	i;
 
 	i = 1;
 	while (vars[i])
 	{
-		prev = NULL;
-		curr = *head;
-		while (curr)
-		{
-			if (!ft_strncmp(curr->name, vars[i], ft_strlen(vars[i]) + 1))
-			{
-				if (prev)
-					prev->next = curr->next;
-				else
-					*head = (*head)->next;
-				free(curr->name);
-				free(curr->value);
-				free(curr);
-				break ;
-			}
-			prev = curr;
-			curr = curr->next;
-		}
+		ft_remove_env(head, vars[i]);
 		i++;
 	}
+	sh->last_status = 0;
 }

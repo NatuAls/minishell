@@ -39,65 +39,62 @@
 void ft_getinput(t_mini_sh*sh)
 {
 	//char	*prompt;
-	char	*input;
 	//char 	**args;
 
 	while (1)
 	{
 		//prompt = ft_get_prompt();
-		input = readline(GRN "Minishell☠$> " NRM);
+		sh->input = readline(GRN "Minishell$> " NRM);
 		if(g_signal_vol == SIGINT)
 			g_signal_vol = 0; // Reset signal after handling
 		else if (g_signal_vol == SIGQUIT)
 			g_signal_vol = 0;
-		if (!input) // Ctrl+D  hace que readline retorne NULL
+		if (!sh->input) // Ctrl+D  hace que readline retorne NULL
 		{
 			printf("exit\n");
 			ft_free_mini_sh(sh, 1);
 			rl_clear_history();
 			exit(EXIT_SUCCESS);
 		}
-		if (input[0] == ' ' || input[0] == '\0')
+		if (sh->input[0] == ' ' || sh->input[0] == '\0')
 		{
-			free(input);
+			free(sh->input);
 	//		ft_printf("");
 			rl_on_new_line(); //mueve el cursor a una nueva linea
     			rl_replace_line("", 0);  //borra el texto de la linea actual
     			rl_redisplay(); //redibuja la linea actual
 			continue ;
 		}
-		add_history(input);
+		add_history(sh->input);
 		
 		//ft_printf("Has escrito " BLU "%s\n" NRM,input);//para debug
-		sh->tokens = tokenizer(input, sh);
+		sh->tokens = tokenizer(sh->input, sh);
 		if (!sh->tokens)
 		{
 			//free(prompt);
-			free(input);
+			free(sh->input);
 			continue ;
 		}
 		sh->tokens_head = sh->tokens;
 		while (sh->tokens)
 		{
-			printf("TOKEN %d: %s\n", sh->tokens->type, sh->tokens->value);//para debug
+			dprintf(2, "TOKEN %d: %s\n", sh->tokens->type, sh->tokens->value);//para debug
 			sh->tokens = sh->tokens->next;
 		}
 		sh->tokens = sh->tokens_head;
-		if (!ft_strncmp(sh->tokens->value, "exit", 5))// Comando para salir del shell
+		/*if (!ft_strncmp(sh->tokens->value, "exit", 5))// Comando para salir del shell
 		{
 			ft_free_mini_sh(sh, 1);
 			//free(prompt);
-			free(input);
 			rl_clear_history();
 			exit(EXIT_SUCCESS);
-		}
+		}*/
 
 		sh->node = parse(&sh->tokens);
 		if (!sh->node)
 		{
 			ft_free_mini_sh(sh, 0);
 			//free(prompt);
-			free(input);
 			continue ;
 		}
 		sh->node_head = sh->node;
@@ -113,7 +110,6 @@ void ft_getinput(t_mini_sh*sh)
 		//if(node->args[0][0] == '/')   para otras opciones
 		ft_free_mini_sh(sh, 0);
 		//free(prompt);
-		free(input);
 	}
 
 }
@@ -134,7 +130,7 @@ int	main(int argc, char**argv, char **envp)
 		shell.tokens_head = NULL;
 		shell.node = NULL;
 		shell.node_head = NULL;
-	 							
+	 	
 		ft_setup_signals();
 		ft_getinput(&shell);
 	}

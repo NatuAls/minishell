@@ -1,7 +1,13 @@
 #include "includes/minishell.h"
 
-void	ft_env(t_env *head)
+void	ft_env(t_env *head, char **args, t_mini_sh *sh)
 {
+	if (args[1])
+	{
+		ft_put_error("env: No such file or directory", args[1]);
+		sh->last_status = 127;
+		return ;
+	}
 	while (head)
 	{
 		if (head->value)
@@ -13,4 +19,5 @@ void	ft_env(t_env *head)
 		}
 		head = head->next;
 	}
+	sh->last_status = 0;
 }
