@@ -45,7 +45,7 @@ void ft_getinput(t_mini_sh*sh)
 	{
 		//prompt = ft_get_prompt();
 		sh->input = readline(GRN "Minishell$> " NRM);
-		if(g_signal_vol == SIGINT)
+		if(g_signal_vol)
 			g_signal_vol = 0; // Reset signal after handling
 		else if (g_signal_vol == SIGQUIT)
 			g_signal_vol = 0;
