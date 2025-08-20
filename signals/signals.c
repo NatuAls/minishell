@@ -7,14 +7,13 @@ void handle_sig_c(int sig)
 {
     (void)sig;
     g_signal_vol = 1;
-    if (g_signal_vol)
+    printf("\n");
+    if (rl_line_buffer && rl_line_buffer[0] == '\0') 
     {
-        printf("\n");
         rl_on_new_line();
         rl_replace_line("", 0);
         rl_redisplay();
     }
-    
 }
 
 void handle_sig_quit(int sig)
@@ -23,7 +22,7 @@ void handle_sig_quit(int sig)
     printf("\nno hace nada\n");
     g_signal_vol = SIGQUIT;
     rl_on_new_line();
-            rl_replace_line("", 0);
+    rl_replace_line("", 0);
     rl_redisplay();
 }
 
@@ -35,14 +34,15 @@ void ft_setup_own(void)
 	sa.sa_handler = SIG_DFL;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
-		//////////////
+	if (sigaction(SIGINT, &sa, NULL) == -1)
+        printf("Error setting SIGINT handler\n");
+    sigaction(SIGQUIT, &sa, NULL);
+
 
 }
 
 
-void ft_setup_signals(void)
+void ft_setup_signals()
 {
     struct sigaction sa_int;
     struct sigaction sa_quit;
@@ -58,3 +58,32 @@ void ft_setup_signals(void)
     sigaction(SIGINT, &sa_int, NULL);    // Ctrl+C
     sigaction(SIGQUIT, &sa_quit, NULL);  // Ctrl+ barra
 }
+
+
+
+
+
+/*
+
+tcsetattr(int fd, int optional_actions, const struct termios *termios_p)
+
+Qué hace: Cambia la configuración del terminal a la que pongas en termios_p.
+
+optional_actions define cuándo aplicar el cambio:
+
+TCSANOW → inmediato.
+
+TCSADRAIN → espera a vaciar salida antes de aplicar.
+
+TCSAFLUSH → como TCSADRAIN pero también limpia la entrada pendiente.
+
+Retorno: 0 si va bien, -1 en error.
+
+Ejemplo: desactivar eco de control (^C, ^\):
+
+struct termios term;
+tcgetattr(STDIN_FILENO, &term);
+term.c_lflag &= ~ECHOCTL;  // oculta ^C, ^\
+tcsetattr(STDIN_FILENO, TCSANOW, &term);
+
+*/

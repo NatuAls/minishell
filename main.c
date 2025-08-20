@@ -131,7 +131,7 @@ int	main(int argc, char**argv, char **envp)
 		shell.node = NULL;
 		shell.node_head = NULL;
 	 	
-		ft_setup_signals();
+		ft_setup_signals(shell);
 		ft_getinput(&shell);
 	}
 //echo hola mundo | tr a-z A-Z | rev  test comando de ejemplo

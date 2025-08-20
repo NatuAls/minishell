@@ -107,7 +107,7 @@ char	*ft_getenv(t_env *head, char *name);
 char	**ft_env_to_arr(t_env *head);
 
 void	handle_sig_c(int sig);
-void	ft_setup_signals(void);
+void	ft_setup_signals();
 void	ft_setup_own();
 
 #define RLNP_S "\001"
