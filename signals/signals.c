@@ -8,8 +8,8 @@ void handle_sig_c(int sig)
     (void)sig;
     g_signal_vol = 1;
     printf("\n");
-    if (rl_line_buffer && rl_line_buffer[0] == '\0') 
-    {
+   if (rl_line_buffer && rl_line_buffer[0] == '\0') 
+   {
         rl_on_new_line();
         rl_replace_line("", 0);
         rl_redisplay();
@@ -19,7 +19,8 @@ void handle_sig_c(int sig)
 void handle_sig_quit(int sig)
 {
     (void)sig;
-    printf("\nno hace nada\n");
+//    printf("\nno hace nada\n");
+
     g_signal_vol = SIGQUIT;
     rl_on_new_line();
     rl_replace_line("", 0);

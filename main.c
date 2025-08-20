@@ -6,7 +6,7 @@
 /*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 14:48:12 by nalesso           #+#    #+#             */
-/*   Updated: 2025/08/12 17:51:00 by israetor         ###   ########.fr       */
+/*   Updated: 2025/08/20 16:37:57 by israetor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,10 @@ void ft_getinput(t_mini_sh*sh)
 		if (sh->input[0] == ' ' || sh->input[0] == '\0')
 		{
 			free(sh->input);
-	//		ft_printf("");
-			rl_on_new_line(); //mueve el cursor a una nueva linea
-    			rl_replace_line("", 0);  //borra el texto de la linea actual
-    			rl_redisplay(); //redibuja la linea actual
+			ft_printf("");
+//			rl_on_new_line(); //mueve el cursor a una nueva linea
+ //   			rl_replace_line("", 0);  //borra el texto de la linea actual
+ //   			rl_redisplay(); //redibuja la linea actual
 			continue ;
 		}
 		add_history(sh->input);
