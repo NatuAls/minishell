@@ -51,38 +51,35 @@ void	handle_env(char *line, int *i, char **word, t_mini_sh *sh)
 	free(name);
 }
 
-void	handle_quotes(char *line, int *i, Token **head, Token **last, t_mini_sh *sh)
+void	handle_quotes(char *line, int *i, char **word, t_mini_sh *sh)
 {
-	char	*word;
 	char	*tmp;
+	char	*seg;
 	char	c[2];
 	char	quote_char;
-	Token	*tok;
 
-	word = ft_strdup("");
+	seg = ft_strdup("");
 	quote_char = line[(*i)++];
 	while (line[*i] && line[*i] != quote_char)
 	{
 		if (line[*i] == '$' && quote_char == '"')
-			handle_env(line, i, &word, sh);
+			handle_env(line, i, &seg, sh);
 		else
 		{
 			c[0] = line[*i];
 			c[1] = '\0';
-			tmp = word;
-			word = ft_strjoin(word, c);
+			tmp = seg;
+			seg = ft_strjoin(seg, c);
 			free(tmp);
 			(*i)++;
 		}
 	}
 	if (line[*i] == quote_char)
 		(*i)++;
-	tok = new_token(TOKEN_WORD, word);
-	if (!*head)
-		*head = tok;
-	else
-		(*last)->next = tok;
-	*last = tok;
+	tmp = *word;
+	*word = ft_strjoin(*word, seg);
+	free(tmp);
+	free(seg);
 }
 
 void	handle_pipe(int *i, Token **last)
@@ -131,9 +128,13 @@ void	handle_word(char *line, int *i, Token **head, Token **last, t_mini_sh *sh)
 	Token	*tok;
 
 	word = ft_strdup("");
-	while (line[*i] && line[*i] != ' ')
+	while (line[*i])
 	{
-		if (line[*i] == '$')
+		if (line[*i] == ' ')
+			break ;
+		else if (line[*i] == '\'' || line[*i] == '"')
+			handle_quotes(line, i, &word, sh);
+		else if (line[*i] == '$')
 			handle_env(line, i, &word, sh);
 		else
 		{
@@ -207,9 +208,9 @@ Token	*tokenizer(char *line, t_mini_sh *sh)
 	{
 		while (line[i])
 		{
-			if (line[i] == '"' || line[i] == '\'')
-				handle_quotes(line, &i, &head, &last, sh);
-			else if (line[i] == '|')
+			//if (line[i] == '"' || line[i] == '\'')
+			//	handle_quotes(line, &i, &head, &last, sh);
+			if (line[i] == '|')
 				handle_pipe(&i, &last);
 			else if (line[i] == '>' || line[i] == '<')
 				handle_redirection(line, &i, &head, &last);
