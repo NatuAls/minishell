@@ -42,21 +42,18 @@ t_env	*ft_setenv(char **env)
 	return (head);
 }
 
-char	*ft_getenv(t_env *head, char *name)
+t_env	*ft_getenv(t_env *head, char *name)
 {
-	char	*value;
+	t_env	*node;
 
-	value = NULL;
-	while (head)
+	node = head;
+	while (node)
 	{
-		if (!ft_strncmp(head->name, name, ft_strlen(name) + 1))
-		{
-			value = head->value;
+		if (!ft_strncmp(node->name, name, ft_strlen(name) + 1))
 			break ;
-		}	
-		head = head->next;
+		node = node->next;
 	}
-	return (value);
+	return (node);
 }
 
 int	ft_envlen(t_env *head)

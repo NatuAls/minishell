@@ -104,7 +104,7 @@ void	ft_bexit(t_mini_sh *sh);
 
 t_env	*ft_new_env(char *name, char *value);
 t_env	*ft_setenv(char **env);
-char	*ft_getenv(t_env *head, char *name);
+t_env	*ft_getenv(t_env *head, char *name);
 char	**ft_env_to_arr(t_env *head);
 
 void	handle_sig_c(int sig);

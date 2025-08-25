@@ -17,15 +17,13 @@ void	handle_env(char *line, int *i, char **word, t_mini_sh *sh)
 {
 	char	*name;
 	char	*tmp;
-	char	*value;
+	t_env	*env;
 	int	start;
 
 	start = ++(*i);
 	if (line[*i] == '?')
 	{
-		value = ft_itoa(sh->last_status);
-		tmp = ft_strjoin(*word, value);
-		free(value);
+		tmp = ft_strjoin(*word, ft_itoa(sh->last_status));
 		free(*word);
 		*word = tmp;
 		(*i)++;
@@ -42,10 +40,10 @@ void	handle_env(char *line, int *i, char **word, t_mini_sh *sh)
 		return ;
 	}
 	name = ft_substr(line, start, *i - start);
-	value = ft_getenv(sh->env, name);
-	if (!value)
-		value = "";
-	tmp = ft_strjoin(*word, value);
+	env = ft_getenv(sh->env, name);
+	if (!env)
+		return (free(name));
+	tmp = ft_strjoin(*word, env->value);
 	free(*word);
 	*word = tmp;
 	free(name);

@@ -24,7 +24,7 @@ int ft_check_access(char *path)
 
 char *ft_get_path(ASTNode*command, t_mini_sh *sh) // intento de refactor
 {
-	char 	*path;
+	t_env 	*path;
 	char 	**path_splited;
 	int	len;
 	int	count;
@@ -35,7 +35,7 @@ char *ft_get_path(ASTNode*command, t_mini_sh *sh) // intento de refactor
 	path = ft_getenv(sh->env, "PATH");
 	if (!path)
 		return (NULL);
-	path_splited = ft_split(path,':');
+	path_splited = ft_split(path->value,':');
 	count = 0;
 	len = ft_strlen_array(path_splited);
 

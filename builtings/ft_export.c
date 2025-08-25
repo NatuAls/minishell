@@ -80,41 +80,73 @@ int	ft_is_valid_name(char *name)
 	return (1);
 }
 
-int	ft_export_process(t_env *head, char *var)
+int	ft_parse_assignment(char *var, char **key, char **value)
 {
-	char	**key_value;
+	char	*parse;
 
-	key_value = ft_split(var, '=');
-	if (!ft_is_valid_name(key_value[0]))
-		return (ft_free_strs(key_value), 1);
-	while (head)
+	*key = NULL;
+	*value = NULL;
+	parse = ft_strchr(var, '=');
+	if (!parse)
 	{
-		if (!ft_strncmp(head->name, key_value[0], ft_strlen(head->name) + 1))
-		{
-			if (key_value[1])
-			{
-				free(head->value);
-				head->value = ft_strdup(key_value[1]);
-			}
-			ft_free_strs(key_value);
-			return (0);
-		}
-		if (head->next == NULL)
-			break ;
-		head = head->next;
+		*key = ft_strdup(var);
+		if (!*key)
+			return (1);
+		return (0);
 	}
-	head->next = ft_new_env(key_value[0], key_value[1]);
-	ft_free_strs(key_value);
+	*key = ft_substr(var, 0, parse - var);
+	if (!*key)
+		return (1);
+	*value = ft_strdup(parse + 1);
+	if (!*value)
+	{
+		free(*key);
+		*key = NULL;
+		return (1);
+	}
 	return (0);
+}
+
+int	ft_export_process(t_env *head, t_env *final, char *var)
+{
+	char	*key;
+	char	*value;
+	t_env	*node;
+
+	if (ft_parse_assignment(var, &key, &value))
+		return (1);
+	if (!ft_is_valid_name(key))
+		return (free(key), free(value), 1);
+	node = ft_getenv(head, key);
+	if (node)
+	{
+		if (value)
+		{
+			free(node->value);
+			node->value = ft_strdup(value);
+		}
+	}
+	else
+		final->next = ft_new_env(key, value);
+	return (free(key), free(value), 0);
 }
 
 void	ft_export(t_env *head, char *var, t_mini_sh *sh)
 {
+	t_env	*final;
+
 	if (!var)
 	{
 		ft_put_export(head);
 		sh->last_status = 0;
 		return ;
 	}
-	sh->last_status = ft_export_process(head, var);
+	final = head;
+	while (final)
+	{
+		if (final->next == NULL)
+			break ;
+		final = final->next;
+	}
+	sh->last_status = ft_export_process(head, final, var);
 }
