@@ -8,6 +8,7 @@
 #	include <sys/wait.h>
 #	include <signal.h>
 #	include <limits.h>
+#	include <termios.h>
 #	include "../libft/libft.h"
 
 extern volatile sig_atomic_t g_signal_vol;
