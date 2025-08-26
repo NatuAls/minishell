@@ -1,10 +1,10 @@
 #include "includes/minishell.h"
 
-Token	*new_token(TokenType type, char	*value)
+t_token	*new_token(t_token_type type, char	*value)
 {
-	Token	*new;
+	t_token	*new;
 
-	new = malloc(sizeof(Token));
+	new = malloc(sizeof(t_token));
 	if (!new)
 		return (NULL);
 	new->type = type;
@@ -80,9 +80,9 @@ void	handle_quotes(char *line, int *i, char **word, t_mini_sh *sh)
 	free(seg);
 }
 
-void	handle_pipe(int *i, Token **last)
+void	handle_pipe(int *i, t_token **last)
 {
-	Token	*tok;
+	t_token	*tok;
 
 	if (!(*last))
 		return ;
@@ -92,9 +92,9 @@ void	handle_pipe(int *i, Token **last)
 	(*i)++;
 }
 
-void	handle_redirection(char *line, int *i, Token **head, Token **last)
+void	handle_redirection(char *line, int *i, t_token **head, t_token **last)
 {
-	Token	*tok;
+	t_token	*tok;
 	
 	if (line[*i] == '<' && line[*i + 1] == '<')
 	{
@@ -118,12 +118,12 @@ void	handle_redirection(char *line, int *i, Token **head, Token **last)
 	(*i)++;
 }
 
-void	handle_word(char *line, int *i, Token **head, Token **last, t_mini_sh *sh)
+void	handle_word(char *line, int *i, t_token **head, t_token **last, t_mini_sh *sh)
 {
 	char	*word;
 	char	*tmp;
 	char	c[2];
-	Token	*tok;
+	t_token	*tok;
 
 	word = ft_strdup("");
 	while (line[*i])
@@ -186,12 +186,12 @@ int	check_quotes(char *line)
 	return (in_single || in_double);
 }
 
-Token	*tokenizer(char *line, t_mini_sh *sh)
+t_token	*tokenizer(char *line, t_mini_sh *sh)
 {
 	int	i;
 	int	checker;
-	Token	*head;
-	Token	*last;
+	t_token	*head;
+	t_token	*last;
 
 	i = 0;
 	head = NULL;

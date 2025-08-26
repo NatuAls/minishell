@@ -1,64 +1,93 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipe.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/26 12:34:16 by nalesso           #+#    #+#             */
+/*   Updated: 2025/08/26 14:43:23 by nalesso          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "includes/minishell.h"
 
-void ft_execute_pipe(ASTNode *node, t_mini_sh *sh)
+void	handle_status(int status, t_mini_sh *sh)
 {
-    int     fd[2];
-    int     status;
-    pid_t   pid1;
-    pid_t   pid2;
+	if (WIFEXITED(status))
+		sh->last_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		sh->last_status = 128 + WTERMSIG(status);
+	else
+		sh->last_status = 1;
+}
 
-    pipe(fd);
-    if (node->type != NODE_PIPE || !node)
-    {
-        printf("Error: NODE_PIPE \n");
-        return;
-    }
-    // Crea el primer proceso hijo
-    // que ejecutará el comando a la izquierda del pipe
-    // y redirigir su salida estándar al pipe   
-  
-    pid1 = fork();
-    if (pid1 < 0) {
-        perror("fork error");
-        return;
-    }
+static pid_t	child_left(t_ast *node, t_mini_sh *sh, int fd[2])
+{
+	pid_t	pid;
 
-    if (pid1 == 0) {
-        dup2(fd[1], STDOUT_FILENO);
-        close(fd[0]);
-        close(fd[1]);
-        if (node->left->type == NODE_PIPE)
-            ft_execute_pipe(node->left, sh); //recursivamente si hay multiples pipes
-        else
-            ft_execute(node->left, sh);
-        exit(EXIT_SUCCESS);
-    }
+	pid = fork();
+	if (pid < 0)
+	{
+		perror("fork");
+		return (-1);
+	}
+	if (pid == 0)
+	{
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
+			exit(1);
+		close(fd[0]);
+		close(fd[1]);
+		if (node->left->type == NODE_PIPE)
+			ft_execute_pipe(node->left, sh);
+		else
+			ft_execute(node->left, sh);
+		exit(sh->last_status);
+	}
+	return (pid);
+}
 
-    // Crea el segundo proceso hijo
-    // que ejecutará el comando a la derecha del pipe
-    // y redirigir su entrada estándar desde el pipe
-    pid2 = fork();
-    if (pid2 < 0) 
-		{
-        perror("fork error");
-        return;
-    }
+static pid_t	child_right(t_ast *node, t_mini_sh *sh, int fd[2])
+{
+	pid_t	pid;
 
-    if (pid2 == 0)
-		 {
-        dup2(fd[0], STDIN_FILENO);
-        close(fd[1]);
-        close(fd[0]);
-				if (node->right->type == NODE_PIPE)
-					ft_execute_pipe(node->right, sh);
-				else
-					ft_execute(node->right, sh);
-       exit(EXIT_SUCCESS);
-    }
+	pid = fork();
+	if (pid < 0)
+	{
+		perror("fork");
+		return (-1);
+	}
+	if (pid == 0)
+	{
+		if (dup2(fd[0], STDIN_FILENO) == -1)
+			exit(1);
+		close(fd[1]);
+		close(fd[0]);
+		if (node->right->type == NODE_PIPE)
+			ft_execute_pipe(node->right, sh);
+		else
+			ft_execute(node->right, sh);
+		exit(sh->last_status);
+	}
+	return (pid);
+}
 
-    close(fd[0]);
-    close(fd[1]);
-    waitpid(pid1, NULL, 0);
-    waitpid(pid2, &status, 0);
-    sh->last_status = status >> 8;
+void	ft_execute_pipe(t_ast *node, t_mini_sh *sh)
+{
+	int		fd[2];
+	int		status;
+	pid_t	pid1;
+	pid_t	pid2;
+
+	if (!node || node->type != NODE_PIPE)
+		return (ft_put_error("Error", "NODE_PIPE"));
+	if (pipe(fd) == -1)
+		return (perror("pipe"));
+	pid1 = child_left(node, sh, fd);
+	pid2 = child_right(node, sh, fd);
+	close(fd[0]);
+	close(fd[1]);
+	waitpid(pid1, NULL, 0);
+	waitpid(pid2, &status, 0);
+	handle_status(status, sh);
 }

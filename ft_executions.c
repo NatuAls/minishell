@@ -22,7 +22,7 @@ int ft_check_access(char *path)
 		return (-1);
 }
 
-char *ft_get_path(ASTNode*command, t_mini_sh *sh) // intento de refactor
+char *ft_get_path(t_ast*command, t_mini_sh *sh) // intento de refactor
 {
 	t_env 	*path;
 	char 	**path_splited;
@@ -88,7 +88,7 @@ void	ft_put_error(char *prefix, char *msg)
 	write(2, "\n", 1);
 }
 
-void	ft_execute(ASTNode *node, t_mini_sh *sh)
+void	ft_execute(t_ast *node, t_mini_sh *sh)
 {
 	int	status;
 	char 	*path;
@@ -130,5 +130,5 @@ void	ft_execute(ASTNode *node, t_mini_sh *sh)
 		ft_free_strs(env_arr);
 	}
 	waitpid(sh->mypid, &status, 0);
-	sh->last_status = status >> 8;
+	handle_status(status, sh);
 }

@@ -6,7 +6,7 @@ void	print_indent(int level)
 		printf("  ");
 }
 
-void	print_ast(ASTNode *node, int level)
+void	print_ast(t_ast *node, int level)
 {
 	if (!node)
 		return;

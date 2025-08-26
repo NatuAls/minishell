@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_execute_builting.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/26 11:53:39 by nalesso           #+#    #+#             */
+/*   Updated: 2025/08/26 11:53:41 by nalesso          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "includes/minishell.h"
 
-int	ft_execute_builting(ASTNode *node, t_mini_sh *sh)
+int	ft_execute_builting(t_ast *node, t_mini_sh *sh)
 {
 	if (!node || node->type != NODE_COMMAND)
 		return (0);

@@ -26,7 +26,7 @@ void	ft_free_strs(char **strs)
 	free(strs);
 }
 
-void	ft_freeAST(ASTNode *head)
+void	ft_freeAST(t_ast *head)
 {
 	if (!head)
 		return ;
@@ -39,9 +39,9 @@ void	ft_freeAST(ASTNode *head)
 	free(head);
 }
 
-void	ft_free_tokens(Token *tokens)
+void	ft_free_tokens(t_token *tokens)
 {
-	Token	*tmp;
+	t_token	*tmp;
 
 	while (tokens)
 	{

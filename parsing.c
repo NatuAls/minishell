@@ -1,6 +1,6 @@
 #include "includes/minishell.h"
 
-int	count_words(Token *tokens)
+int	count_words(t_token *tokens)
 {
 	int	i;
 
@@ -13,11 +13,11 @@ int	count_words(Token *tokens)
 	return (i);
 }
 
-ASTNode	*new_ASTNode(NodeType type, char **args, char *filename, TokenType redir_type)
+t_ast	*new_ASTNode(t_node_type type, char **args, char *filename, t_token_type redir_type)
 {
-	ASTNode	*new;
+	t_ast	*new;
 
-	new = malloc(sizeof(ASTNode));
+	new = malloc(sizeof(t_ast));
 	if (!new)
 		return (NULL);
 	new->type = type;
@@ -30,7 +30,7 @@ ASTNode	*new_ASTNode(NodeType type, char **args, char *filename, TokenType redir
 	return (new);
 }
 
-ASTNode	*parse_command(Token **tokens)
+t_ast	*parse_command(t_token **tokens)
 {
 	int	i;
 	int	size;
@@ -53,11 +53,11 @@ ASTNode	*parse_command(Token **tokens)
 	return (new_ASTNode(NODE_COMMAND, args, NULL, TOKEN_NONE));
 }
 
-ASTNode *parse_redir(Token **tokens, ASTNode *left)
+t_ast *parse_redir(t_token **tokens, t_ast *left)
 {
-	ASTNode	*redir;
+	t_ast	*redir;
 	char 	*filename;
-	TokenType	redir_type;
+	t_token_type	redir_type;
 
 	redir_type = (*tokens)->type;
 	*tokens = (*tokens)->next;
@@ -74,7 +74,7 @@ ASTNode *parse_redir(Token **tokens, ASTNode *left)
 	return (redir);
 }
 
-int	is_redir(TokenType type)
+int	is_redir(t_token_type type)
 {
 	int	result;
 
@@ -90,10 +90,10 @@ int	is_redir(TokenType type)
 	return (result);
 }
 
-ASTNode	*parse(Token **tokens)
+t_ast	*parse(t_token **tokens)
 {
-	ASTNode *left;
-	ASTNode	*pipe;
+	t_ast *left;
+	t_ast	*pipe;
 
 	left = parse_command(tokens);
 	while (*tokens && is_redir((*tokens)->type))

@@ -48,7 +48,7 @@ int	ft_handle_heredoc(char *filename)
 	return (fd[0]);
 }
 
-void	expand_heredocs(ASTNode *node)
+void	expand_heredocs(t_ast *node)
 {
 	if (!node)
 		return ;
@@ -58,7 +58,7 @@ void	expand_heredocs(ASTNode *node)
 	expand_heredocs(node->right);
 }
 
-ASTNode	*ft_apply_redirection(ASTNode *node)
+t_ast	*ft_apply_redirection(t_ast *node)
 {
 	int	fd;
 

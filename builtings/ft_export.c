@@ -1,37 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_export.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/26 11:54:09 by nalesso           #+#    #+#             */
+/*   Updated: 2025/08/26 11:59:10 by nalesso          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "includes/minishell.h"
-
-void	ft_sort_env(char **env_arr)
-{
-	int	i;
-	int	swapped;
-	int	len;
-	char	*tmp;
-
-	do
-	{
-		swapped = 0;
-		i = 0;
-		while (env_arr[i + 1])
-		{
-			len = ft_strlen(env_arr[i]) + 1;
-			if (ft_strncmp(env_arr[i], env_arr[i + 1], len) > 0)
-			{
-				tmp = env_arr[i];
-				env_arr[i] = env_arr[i + 1];
-				env_arr[i + 1] = tmp;
-				swapped = 1;
-			}
-			i++;
-		}
-	}
-	while (swapped);
-}
 
 void	ft_put_export(t_env *head)
 {
+	int		i;
 	char	**env_arr;
 	char	*eq;
-	int	i;
 
 	env_arr = ft_env_to_arr(head);
 	ft_sort_env(env_arr);
@@ -57,8 +42,9 @@ void	ft_put_export(t_env *head)
 
 int	ft_is_valid_name(char *name)
 {
-	int i = 0;
+	int	i;
 
+	i = 0;
 	if (!name || !name[0])
 		return (0);
 	if (ft_isalpha(name[i]) || name[i] == '_')
