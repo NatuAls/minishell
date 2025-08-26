@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: israetor <israetor@student.42barcelon      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/26 12:35:40 by israetor          #+#    #+#             */
+/*   Updated: 2025/08/26 12:48:00 by israetor         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "includes/minishell.h"
 #include <signal.h>
 
@@ -9,14 +21,22 @@ void handle_sig_c(int sig)
     g_signal_vol = 1;
    if (rl_line_buffer && rl_line_buffer[0] == '\0') 
    {
-        rl_on_new_line();
-        rl_replace_line("", 0);
-        rl_redisplay();
-    }
-    printf("^C\n");
-		rl_on_new_line();
-    rl_redisplay();
+      rl_on_new_line();
+      rl_redisplay();
+			// printf("^C\n");
+		  printf("\n");
+
+      rl_replace_line("", 0);
+					rl_on_new_line();
+			rl_redisplay();
 	
+    }
+		else{ 
+		 // printf("^C\n");
+      rl_replace_line("", 0);
+			rl_on_new_line();
+			rl_redisplay();
+	}
 
 /*
 
@@ -51,7 +71,7 @@ void handle_sig_quit(int sig)
 {
     (void)sig;
     g_signal_vol = SIGQUIT;
-    rl_on_new_line();
+   // rl_on_new_line();
     rl_replace_line("", 0);
     rl_redisplay();
 }
