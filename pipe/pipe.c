@@ -12,10 +12,14 @@
 
 #include "includes/minishell.h"
 
-void	handle_status(int status, t_mini_sh *sh)
+void	handle_status(int status, t_mini_sh *sh, int printed)
 {
 	if (WIFEXITED(status))
+	{
 		sh->last_status = WEXITSTATUS(status);
+		if (sh->last_status == SIGPIPE && !printed)
+			ft_put_error("Minishell: ", "Broken pipe");
+	}
 	else if (WIFSIGNALED(status))
 		sh->last_status = 128 + WTERMSIG(status);
 	else
@@ -75,7 +79,9 @@ static pid_t	child_right(t_ast *node, t_mini_sh *sh, int fd[2])
 void	ft_execute_pipe(t_ast *node, t_mini_sh *sh)
 {
 	int		fd[2];
-	int		status;
+	int		st1;
+	int		st2;
+	int		printed;
 	pid_t	pid1;
 	pid_t	pid2;
 
@@ -87,7 +93,13 @@ void	ft_execute_pipe(t_ast *node, t_mini_sh *sh)
 	pid2 = child_right(node, sh, fd);
 	close(fd[0]);
 	close(fd[1]);
-	waitpid(pid1, NULL, 0);
-	waitpid(pid2, &status, 0);
-	handle_status(status, sh);
+	waitpid(pid1, &st1, 0);
+	waitpid(pid2, &st2, 0);
+	printed = 0;
+	if (WIFSIGNALED(st1) && WTERMSIG(st1) == SIGPIPE)
+	{
+		ft_put_error("Minishell: ", "Broken pipe");
+		printed = 1;
+	}
+	handle_status(st2, sh, printed);
 }

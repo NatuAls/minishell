@@ -46,19 +46,22 @@ int	ft_is_valid_name(char *name)
 
 	i = 0;
 	if (!name || !name[0])
+	{
+		ft_put_error("export", "not a valid identifier");
 		return (0);
+	}
 	if (ft_isalpha(name[i]) || name[i] == '_')
 		i++;
 	else
 	{
-		ft_put_error("export", "the name is not valid");
+		ft_put_error("export", "not a valid identifier");
 		return (0);
 	}
 	while (name[i])
 	{
 		if (!ft_isalnum(name[i]) && name[i] != '_')
 		{
-			ft_put_error("export", "the name is not valid");
+			ft_put_error("export", "not a valid identifier");
 			return (0);
 		}
 		i++;

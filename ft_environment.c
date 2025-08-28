@@ -19,7 +19,9 @@ t_env	*ft_new_env(char *name, char *value)
 t_env	*ft_setenv(char **env)
 {
 	int	i;
-	char	**key_value;
+	char	*key;
+	char	*value;
+	char	*eq;
 	t_env	*head;
 	t_env	*last;
 	t_env	*new;
@@ -29,9 +31,10 @@ t_env	*ft_setenv(char **env)
 	last = NULL;
 	while (env[i])
 	{
-		key_value = ft_split(env[i], '=');
-		new = ft_new_env(key_value[0], key_value[1]);
-		ft_free_strs(key_value);
+		eq = ft_strchr(env[i], '=');
+		key = ft_substr(env[i], 0, eq - env[i]);
+		value = ft_strdup(eq + 1);
+		new = ft_new_env(key, value);
 		if (!head)
 			head = new;
 		else

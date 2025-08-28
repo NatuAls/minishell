@@ -104,8 +104,7 @@ void	ft_execute(t_ast *node, t_mini_sh *sh)
 	else if (sh->mypid == 0)
 	{
 		ft_setup_own();
-		if (node->type == NODE_REDIR)
-			node = ft_apply_redirection(node);
+		node = apply_redirs_and_get_cmd(node);
 		if (!node)
 			exit(EXIT_FAILURE);
 		if (ft_execute_builting(node, sh))
@@ -116,19 +115,28 @@ void	ft_execute(t_ast *node, t_mini_sh *sh)
 			path = ft_get_path(node, sh);
 		if (!path)
 		{
-			ft_put_error("Command not found", node->args[0]);
+			ft_put_error(node->args[0], "command not found");
 			exit(127); //comando no encontrado
 		}
 		env_arr = ft_env_to_arr(sh->env);
 		if (execve(path, node->args, env_arr) == -1)
 		{
+			struct stat st;
+			stat(path, &st);
+			if (S_ISDIR(st.st_mode))
+			{
+				ft_put_error(path, "Is a directory");
+				exit (126);
+			}
 			ft_put_error(path, strerror(errno));
 			free(path);
 			ft_free_strs(env_arr);
+			if (errno == ENOENT || errno == ENOTDIR)
+				exit(127);
 			exit(126); //comando no ejecutable
 		}
 		ft_free_strs(env_arr);
 	}
 	waitpid(sh->mypid, &status, 0);
-	handle_status(status, sh);
+	handle_status(status, sh, 0);
 }

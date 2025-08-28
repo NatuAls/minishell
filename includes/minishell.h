@@ -16,6 +16,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
 # include <signal.h>
 # include <limits.h>
 # include <termios.h>
@@ -83,7 +84,7 @@ typedef struct s_mini_sh
 void	ft_getinput(t_mini_sh *sh);
 t_token	*tokenizer(char	*line, t_mini_sh *sh);
 t_ast	*parse(t_token **tokens);
-t_ast	*ft_apply_redirection(t_ast *node);
+t_ast	*apply_redirs_and_get_cmd(t_ast *node);
 void	expand_heredocs(t_ast *node);
 void	ft_execute(t_ast *node, t_mini_sh *sh);
 
@@ -101,7 +102,7 @@ void	ft_execute_pipe(t_ast *node, t_mini_sh *sh);
 
 int		ft_execute_builting(t_ast *node, t_mini_sh *sh);
 
-void	handle_status(int status, t_mini_sh *sh);
+void	handle_status(int status, t_mini_sh *sh, int printed);
 
 void	ft_echo(char **args, t_mini_sh *sh);
 void	ft_cd(char **args, t_mini_sh *sh);
@@ -110,7 +111,7 @@ void	ft_export(t_env *head, char *var, t_mini_sh *sh);
 void	ft_unset(t_env **head, char **vars, t_mini_sh *sh);
 void	ft_sort_env(char **env_arr);
 void	ft_env(t_env *head, char **args, t_mini_sh *sh);
-void	ft_bexit(t_mini_sh *sh);
+void	ft_bexit(char **args, t_mini_sh *sh);
 
 t_env	*ft_new_env(char *name, char *value);
 t_env	*ft_setenv(char **env);

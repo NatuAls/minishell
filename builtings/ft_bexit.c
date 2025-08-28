@@ -12,11 +12,83 @@
 
 #include "includes/minishell.h"
 
-void	ft_bexit(t_mini_sh *sh)
+int	ft_strslen(char **strs)
 {
+	int	i;
+
+	i = 0;
+	while(strs[i])
+		i++;
+	return (i);
+}
+
+int	ft_is_valid_number(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str || !*str)
+		return (0);
+	if (str[i] == '+' || str[i] == '-')
+		i++;
+	if (!str[i])
+		return (0);
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int	ft_parse_exit_code(char *str)
+{
+	int	nbr;
+	int	neg;
+
+	nbr = 0;
+	neg = 0;
+	if (*str == '+' || *str == '-')
+	{
+		if (*str == '-')
+			neg = 1;
+		str++;
+	}
+	while (*str)
+	{
+		nbr = nbr * 10 + (*str - '0');
+		str++;
+	}
+	if (neg)
+		nbr = -nbr;
+	return ((unsigned char)nbr);
+}
+
+void	ft_bexit(char **args, t_mini_sh *sh)
+{
+	int	argc;
 	int	exit_status;
 
-	exit_status = sh->last_status;
+	argc = ft_strslen(args);
+	if (argc > 2)
+	{
+		ft_put_error("exit", "too many arguments");
+		sh->last_status = 1;
+		return ;
+	}
+	else if (argc == 1)
+		exit_status = sh->last_status;
+	else
+	{
+		if (ft_is_valid_number(args[1]))
+			exit_status = ft_parse_exit_code(args[1]);
+		else
+		{
+			ft_put_error("exit", "numeric argument required");
+			exit_status = 2;
+		}
+	}
 	ft_free_mini_sh(sh, 1);
 	rl_clear_history();
 	exit(exit_status);

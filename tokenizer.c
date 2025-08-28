@@ -36,7 +36,6 @@ void	handle_env(char *line, int *i, char **word, t_mini_sh *sh)
 		tmp = ft_strjoin(*word, "$");
 		free(*word);
 		*word = tmp;
-		(*i)++;
 		return ;
 	}
 	name = ft_substr(line, start, *i - start);
@@ -126,7 +125,7 @@ void	handle_word(char *line, int *i, t_token **head, t_token **last, t_mini_sh *
 	t_token	*tok;
 
 	word = ft_strdup("");
-	while (line[*i])
+	while (line[*i] && line[*i] != '|')
 	{
 		if (line[*i] == ' ')
 			break ;
@@ -144,12 +143,8 @@ void	handle_word(char *line, int *i, t_token **head, t_token **last, t_mini_sh *
 			(*i)++;
 		}
 	}
-	/*if (!word || !*word)
-	{
-		free(word);
-		ft_free_tokens(*head);
-		return ;
-	}*/
+	if (!word || !*word)
+		return (free(word));
 	tok = new_token(TOKEN_WORD, word);
 	if (!*head)
 		*head = tok;

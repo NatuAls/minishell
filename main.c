@@ -76,19 +76,12 @@ void ft_getinput(t_mini_sh*sh)
 			continue ;
 		}
 		sh->tokens_head = sh->tokens;
-		while (sh->tokens)
+		/*while (sh->tokens)
 		{
 			dprintf(2, "TOKEN %d: %s\n", sh->tokens->type, sh->tokens->value);//para debug
 			sh->tokens = sh->tokens->next;
 		}
-		sh->tokens = sh->tokens_head;
-		/*if (!ft_strncmp(sh->tokens->value, "exit", 5))// Comando para salir del shell
-		{
-			ft_free_mini_sh(sh, 1);
-			//free(prompt);
-			rl_clear_history();
-			exit(EXIT_SUCCESS);
-		}*/
+		sh->tokens = sh->tokens_head;*/
 
 		sh->node = parse(&sh->tokens);
 		if (!sh->node)
@@ -98,7 +91,7 @@ void ft_getinput(t_mini_sh*sh)
 			continue ;
 		}
 		sh->node_head = sh->node;
-		//print_ast(node, 0);
+		//print_ast(sh->node, 0);
 		expand_heredocs(sh->node);
 		if (sh->node->type == NODE_PIPE)
 		{	//node = node->left;

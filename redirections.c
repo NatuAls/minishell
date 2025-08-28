@@ -58,7 +58,7 @@ void	expand_heredocs(t_ast *node)
 	expand_heredocs(node->right);
 }
 
-t_ast	*ft_apply_redirection(t_ast *node)
+int	ft_apply_redirection(t_ast *node)
 {
 	int	fd;
 
@@ -73,13 +73,35 @@ t_ast	*ft_apply_redirection(t_ast *node)
 		fd = node->heredoc_fd;
 	if (fd < 0)
 	{
-		ft_put_error(node->filename, "No such file or directory");
-		return (NULL);
+		ft_put_error(node->filename, strerror(errno));
+		return (0);
 	}
 	if (node->redir_type == TOKEN_REDIR_OUT || node->redir_type == TOKEN_REDIR_APPEND)
 		dup2(fd, STDOUT_FILENO);
 	else
 		dup2(fd, STDIN_FILENO);
 	close(fd);
-	return (node->left);
+	return (1);
+}
+
+int	apply_all_redirs(t_ast *node)
+{
+	if (!node)
+		return (1);
+	if (node->type == NODE_REDIR)
+	{
+		if (!apply_all_redirs(node->left))
+			return (0);
+		return (ft_apply_redirection(node));
+	}
+	return (1);
+}
+
+t_ast	*apply_redirs_and_get_cmd(t_ast *node)
+{
+	if (!apply_all_redirs(node))
+		return (NULL);
+	while (node && node->type == NODE_REDIR)
+		node = node->left;
+	return (node);
 }

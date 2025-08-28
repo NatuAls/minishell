@@ -29,6 +29,6 @@ int	ft_execute_builting(t_ast *node, t_mini_sh *sh)
 	else if (!ft_strncmp(node->args[0], "env", 4))
 		return (ft_env(sh->env, node->args, sh), 1);
 	else if (!ft_strncmp(node->args[0], "exit", 5))
-		return (ft_bexit(sh), 1);
+		return (ft_bexit(node->args, sh), 1);
 	return (0);
 }
