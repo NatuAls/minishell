@@ -13,18 +13,18 @@ Implementación de un **shell minimalista** que replica funcionalidades básicas
 ## Instalación y uso  
 1. Clonar el repositorio:  
 ```
-    git clone https://github.com/usuario/minishell.git
+git clone https://github.com/usuario/minishell.git
 ```
 ```
-    cd minishell  
+cd minishell  
 ```
 2. Compilar el programa:  
 ```
-    make  
+make  
 ```
 3. Ejecutar el shell:  
 ```
-    ./minishell  
+./minishell  
 ```
 ## Tecnologías  
 - Lenguaje C  
