@@ -103,7 +103,8 @@ void	ft_execute(t_ast *node, t_mini_sh *sh)
 		exit(EXIT_FAILURE);
 	else if (sh->mypid == 0)
 	{
-		ft_setup_own();
+		//ft_setup_own();// poner las señales por defecto en el hijo
+		set_signals_interactive();//test---------------------------------------------------------------
 		node = apply_redirs_and_get_cmd(node);
 		if (!node)
 			exit(EXIT_FAILURE);

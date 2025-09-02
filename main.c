@@ -44,7 +44,9 @@ void ft_getinput(t_mini_sh*sh)
 	while (1)
 	{
 		//prompt = ft_get_prompt();
+		set_signals_interactive();
 		sh->input = readline(GRN "Minishell$> " NRM);
+	//	set_signals_noninteractive();
 		if(g_signal_vol)
 			g_signal_vol = 0; // Reset signal after handling
 		else if (g_signal_vol == SIGQUIT)
@@ -124,9 +126,13 @@ int	main(int argc, char**argv, char **envp)
 		shell.node = NULL;
 		shell.node_head = NULL;
 	 	
-		ft_setup_signals(shell);
+	//	ft_setup_signals(shell);
+	//	set_signals_interactive();
 		ft_getinput(&shell);
+
 	}
-//echo hola mundo | tr a-z A-Z | rev  test comando de ejemplo
+	else  // solo para saltar la funcion no usada  preguntar donde esta el heredoc para implementarlo
+		set_signals_noninteractive();
+
 	return (1);
 }

@@ -15,6 +15,76 @@
 
 volatile sig_atomic_t g_signal_vol = 0;
 
+
+void	signal_reset_prompt(int signo)
+{
+	(void)signo;
+	g_signal_vol = 1;
+	if (rl_line_buffer && rl_line_buffer[0] == '\0')
+		write(1, "^C\n", 3);
+	else 
+		write(1, "\n^C\n", 4);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void	set_signals_interactive(void)
+{
+	struct sigaction	act;
+
+	ignore_sigquit();
+	ft_memset(&act, 0, sizeof(act));
+	act.sa_handler = &signal_reset_prompt;
+	sigaction(SIGINT, &act, NULL);
+	ft_disable_ctrl_backslash();
+}
+
+
+
+void	set_signals_noninteractive(void)
+{
+	struct sigaction	act;
+
+	ft_memset(&act, 0, sizeof(act));
+	act.sa_handler = &signal_sigint;
+	sigaction(SIGINT, &act, NULL);
+	sigaction(SIGQUIT, &act, NULL);
+	ft_disable_ctrl_backslash();
+}
+
+void	signal_sigint(int signal)
+{
+	(void)signal;
+	g_signal_vol = 1;
+	rl_on_new_line();
+}
+
+void	ignore_sigquit(void)
+{
+	struct sigaction	act;
+
+	ft_memset(&act, 0, sizeof(act));
+	act.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &act, NULL);
+}
+
+void    ft_disable_ctrl_backslash(void)
+{
+    struct termios term;
+
+    if (tcgetattr(STDIN_FILENO, &term) == -1)
+    {
+        perror("tcgetattr");
+        return;
+    }
+    term.c_lflag &= ~ECHOCTL;
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+        perror("tcsetattr");
+}
+/*
+
+
 void handle_sig_c(int sig)
 {
     (void)sig;
@@ -37,8 +107,7 @@ void handle_sig_c(int sig)
 			rl_on_new_line();
 			rl_redisplay();
 	}
-
-/*
+example de uso
 
 if (g_signal == 1  || g_signal == SIGINT)
 	{
@@ -62,7 +131,7 @@ if (g_signal == 1  || g_signal == SIGINT)
 	}
 	sigint_handler_aux();
 
-*/
+////finn ***//*
 
 }
 
@@ -119,14 +188,14 @@ void ft_setup_signals()
     sa_quit.sa_flags = SA_RESTART;
 
     sigaction(SIGINT, &sa_int, NULL);    // Ctrl+C
-		sigaction(SIGQUIT, &sa_quit, NULL);  // Ctrl+ \       /**/
+		sigaction(SIGQUIT, &sa_quit, NULL);  // Ctrl+ \      
 //		ft_disable_echoctl();
-}
+//}
 
 
 
 
-
+*/
 /*
 
 tcsetattr(int fd, int optional_actions, const struct termios *termios_p)

@@ -118,9 +118,16 @@ t_env	*ft_setenv(char **env);
 t_env	*ft_getenv(t_env *head, char *name);
 char	**ft_env_to_arr(t_env *head);
 
+/*
 void	handle_sig_c(int sig);
 void	ft_setup_signals();
-void	ft_setup_own();
+void	ft_setup_own();*/
+
+void	ignore_sigquit(void);
+void	set_signals_interactive(void);
+void	set_signals_noninteractive(void);
+void    ft_disable_ctrl_backslash(void);
+void	signal_sigint(int signal);
 
 # define NRM "\001\x1B[0m\002"
 # define RED "\001\x1B[31m\002"

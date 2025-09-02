@@ -53,7 +53,10 @@ void	expand_heredocs(t_ast *node)
 	if (!node)
 		return ;
 	if (node->redir_type == TOKEN_HEREDOC)
+	{
 		node->heredoc_fd = ft_handle_heredoc(node->filename);
+		set_signals_noninteractive();
+	}
 	expand_heredocs(node->left);
 	expand_heredocs(node->right);
 }
