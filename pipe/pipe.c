@@ -6,7 +6,7 @@
 /*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:34:16 by nalesso           #+#    #+#             */
-/*   Updated: 2025/08/26 14:43:23 by nalesso          ###   ########.fr       */
+/*   Updated: 2025/09/02 16:22:50 by nalesso          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ static pid_t	child_left(t_ast *node, t_mini_sh *sh, int fd[2])
 			ft_execute_pipe(node->left, sh);
 		else
 			ft_execute(node->left, sh);
+		ft_free_mini_sh(sh, 1);
 		exit(sh->last_status);
 	}
 	return (pid);
@@ -71,6 +72,7 @@ static pid_t	child_right(t_ast *node, t_mini_sh *sh, int fd[2])
 			ft_execute_pipe(node->right, sh);
 		else
 			ft_execute(node->right, sh);
+		ft_free_mini_sh(sh, 1);
 		exit(sh->last_status);
 	}
 	return (pid);

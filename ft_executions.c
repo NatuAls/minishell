@@ -100,16 +100,25 @@ void	ft_execute(t_ast *node, t_mini_sh *sh)
 		return ;
 	sh->mypid = fork();
 	if (sh->mypid == -1)
+	{
+		ft_free_mini_sh(sh, 1);
 		exit(EXIT_FAILURE);
+	}
 	else if (sh->mypid == 0)
 	{
 		//ft_setup_own();// poner las señales por defecto en el hijo
 		set_signals_interactive();//test---------------------------------------------------------------
 		node = apply_redirs_and_get_cmd(node);
 		if (!node)
+		{
+			ft_free_mini_sh(sh, 1);
 			exit(EXIT_FAILURE);
+		}
 		if (ft_execute_builting(node, sh))
+		{
+			ft_free_mini_sh(sh, 1);
 			exit(EXIT_SUCCESS);
+		}
 		if(ft_strchr(node->args[0], '/') != NULL)
 			path = ft_strdup(node->args[0]);
 		else
@@ -117,6 +126,7 @@ void	ft_execute(t_ast *node, t_mini_sh *sh)
 		if (!path)
 		{
 			ft_put_error(node->args[0], "command not found");
+			ft_free_mini_sh(sh, 1);
 			exit(127); //comando no encontrado
 		}
 		env_arr = ft_env_to_arr(sh->env);

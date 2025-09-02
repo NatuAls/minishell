@@ -6,7 +6,7 @@
 /*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 11:54:09 by nalesso           #+#    #+#             */
-/*   Updated: 2025/08/26 11:59:10 by nalesso          ###   ########.fr       */
+/*   Updated: 2025/09/02 16:49:41 by nalesso          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ int	ft_export_process(t_env *head, t_env *final, char *var)
 	}
 	else
 		final->next = ft_new_env(key, value);
-	return (free(key), free(value), 0);
+	return (0);
 }
 
 void	ft_export(t_env *head, char *var, t_mini_sh *sh)
