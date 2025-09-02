@@ -19,14 +19,17 @@ volatile sig_atomic_t g_signal_vol = 0;
 void	signal_reset_prompt(int signo)
 {
 	(void)signo;
-	g_signal_vol = 1;
-	if (rl_line_buffer && rl_line_buffer[0] == '\0')
+	g_signal_vol = SIGINT;
+	if(g_signal_vol == SIGINT)
+	{
+	//if (rl_line_buffer && rl_line_buffer[0] == '\0')
 		write(1, "^C\n", 3);
-	else 
-		write(1, "\n^C\n", 4);
+	//else
+	//	write(1, "\n^C\n", 4);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
+	}
 }
 
 void	set_signals_interactive(void)
@@ -37,7 +40,7 @@ void	set_signals_interactive(void)
 	ft_memset(&act, 0, sizeof(act));
 	act.sa_handler = &signal_reset_prompt;
 	sigaction(SIGINT, &act, NULL);
-	ft_disable_ctrl_backslash();
+//	ft_disable_ctrl_backslash();
 }
 
 
@@ -50,14 +53,15 @@ void	set_signals_noninteractive(void)
 	act.sa_handler = &signal_sigint;
 	sigaction(SIGINT, &act, NULL);
 	sigaction(SIGQUIT, &act, NULL);
-	ft_disable_ctrl_backslash();
+//	ft_disable_ctrl_backslash();
 }
 
 void	signal_sigint(int signal)
 {
 	(void)signal;
-	g_signal_vol = 1;
+	g_signal_vol = SIGINT;
 	rl_on_new_line();
+	printf("solo nueva linea\n");
 }
 
 void	ignore_sigquit(void)
@@ -69,6 +73,7 @@ void	ignore_sigquit(void)
 	sigaction(SIGQUIT, &act, NULL);
 }
 
+/*
 void    ft_disable_ctrl_backslash(void)
 {
     struct termios term;
@@ -81,7 +86,7 @@ void    ft_disable_ctrl_backslash(void)
     term.c_lflag &= ~ECHOCTL;
     if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
         perror("tcsetattr");
-}
+}*/
 /*
 
 
