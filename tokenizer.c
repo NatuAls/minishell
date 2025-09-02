@@ -13,6 +13,17 @@ t_token	*new_token(t_token_type type, char	*value)
 	return (new);
 }
 
+char	*auxiliar_join(char **word, t_mini_sh *sh)
+{
+	char	*tmp;
+	char	*status_char;
+
+	status_char = ft_itoa(sh->last_status);
+	tmp = ft_strjoin(*word, status_char);
+	free(status_char);
+	return (tmp);
+}
+
 void	handle_env(char *line, int *i, char **word, t_mini_sh *sh)
 {
 	char	*name;
@@ -23,7 +34,7 @@ void	handle_env(char *line, int *i, char **word, t_mini_sh *sh)
 	start = ++(*i);
 	if (line[*i] == '?')
 	{
-		tmp = ft_strjoin(*word, ft_itoa(sh->last_status));
+		tmp = auxiliar_join(word, sh);
 		free(*word);
 		*word = tmp;
 		(*i)++;

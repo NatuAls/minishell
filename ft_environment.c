@@ -8,8 +8,12 @@ t_env	*ft_new_env(char *name, char *value)
 	if (!new)
 		return (NULL);
 	new->name = ft_strdup(name);
+	free(name);
 	if (value)
+	{
 		new->value = ft_strdup(value);
+		free(value);
+	}
 	else
 		new->value = NULL;
 	new->next = NULL;
