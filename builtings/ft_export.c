@@ -6,7 +6,7 @@
 /*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 11:54:09 by nalesso           #+#    #+#             */
-/*   Updated: 2025/09/02 16:49:41 by nalesso          ###   ########.fr       */
+/*   Updated: 2025/10/21 16:41:01 by nalesso          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ int	ft_parse_assignment(char *var, char **key, char **value)
 	if (!*value)
 	{
 		free(*key);
-		free(value);
 		*key = NULL;
 		return (1);
 	}
@@ -114,6 +113,8 @@ int	ft_export_process(t_env *head, t_env *final, char *var)
 		{
 			free(node->value);
 			node->value = ft_strdup(value);
+			free(value);
+			free(key);
 		}
 	}
 	else
