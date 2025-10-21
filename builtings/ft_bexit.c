@@ -6,18 +6,18 @@
 /*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 11:50:51 by nalesso           #+#    #+#             */
-/*   Updated: 2025/08/26 11:51:18 by nalesso          ###   ########.fr       */
+/*   Updated: 2025/09/08 18:49:20 by nalesso          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 int	ft_strslen(char **strs)
 {
 	int	i;
 
 	i = 0;
-	while(strs[i])
+	while (strs[i])
 		i++;
 	return (i);
 }
@@ -28,6 +28,8 @@ int	ft_is_valid_number(char *str)
 
 	i = 0;
 	if (!str || !*str)
+		return (0);
+	if (checklonglong(str) == 0)
 		return (0);
 	if (str[i] == '+' || str[i] == '-')
 		i++;
@@ -44,8 +46,8 @@ int	ft_is_valid_number(char *str)
 
 int	ft_parse_exit_code(char *str)
 {
-	int	nbr;
-	int	neg;
+	long long	nbr;
+	int			neg;
 
 	nbr = 0;
 	neg = 0;
@@ -71,24 +73,24 @@ void	ft_bexit(char **args, t_mini_sh *sh)
 	int	exit_status;
 
 	argc = ft_strslen(args);
-	if (argc > 2)
+	ft_putstr_fd("exit\n", 1);
+	if (argc >= 2)
 	{
-		ft_put_error("exit", "too many arguments");
-		sh->last_status = 1;
-		return ;
-	}
-	else if (argc == 1)
-		exit_status = sh->last_status;
-	else
-	{
-		if (ft_is_valid_number(args[1]))
+		if (ft_is_valid_number(args[1]) && argc == 2)
 			exit_status = ft_parse_exit_code(args[1]);
-		else
+		else if (!ft_is_valid_number(args[1]) && argc >= 2)
 		{
 			ft_put_error("exit", "numeric argument required");
 			exit_status = 2;
 		}
+		else
+		{
+			sh->last_status = 1;
+			return (ft_put_error("exit", "too many arguments"));
+		}
 	}
+	if (argc == 1)
+		exit_status = sh->last_status;
 	ft_free_mini_sh(sh, 1);
 	rl_clear_history();
 	exit(exit_status);

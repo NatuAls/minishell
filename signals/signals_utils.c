@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*   signals_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: israetor <israetor@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/26 11:54:23 by nalesso           #+#    #+#             */
-/*   Updated: 2025/08/26 11:54:24 by nalesso          ###   ########.fr       */
+/*   Created: 2025/09/09 18:05:27 by israetor          #+#    #+#             */
+/*   Updated: 2025/09/09 18:05:28 by israetor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	ft_pwd(t_mini_sh *sh)
+void	signal_sigint(int signal)
 {
-	char	cwd[PATH_MAX];
+	(void)signal;
+	rl_on_new_line();
+}
 
-	if (getcwd(cwd, sizeof(cwd)))
-	{
-		write(STDOUT_FILENO, cwd, ft_strlen(cwd));
-		write(STDOUT_FILENO, "\n", 1);
-		sh->last_status = 0;
-	}
-	else
-	{
-		ft_put_error("pwd", "error retrieving current directory");
-		sh->last_status = 1;
-	}
+void	ignore_sigquit(void)
+{
+	struct sigaction	act;
+
+	ft_memset(&act, 0, sizeof(act));
+	act.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &act, NULL);
 }

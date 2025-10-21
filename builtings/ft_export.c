@@ -6,11 +6,11 @@
 /*   By: nalesso <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 11:54:09 by nalesso           #+#    #+#             */
-/*   Updated: 2025/09/02 16:49:41 by nalesso          ###   ########.fr       */
+/*   Updated: 2025/10/21 16:41:01 by nalesso          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 void	ft_put_export(t_env *head)
 {
@@ -113,6 +113,8 @@ int	ft_export_process(t_env *head, t_env *final, char *var)
 		{
 			free(node->value);
 			node->value = ft_strdup(value);
+			free(value);
+			free(key);
 		}
 	}
 	else
@@ -120,22 +122,30 @@ int	ft_export_process(t_env *head, t_env *final, char *var)
 	return (0);
 }
 
-void	ft_export(t_env *head, char *var, t_mini_sh *sh)
+void	ft_export(t_env *head, char **args, t_mini_sh *sh)
 {
 	t_env	*final;
+	int		i;
+	int		ret;
 
-	if (!var)
+	if (!args || !args[1])
 	{
 		ft_put_export(head);
 		sh->last_status = 0;
 		return ;
 	}
 	final = head;
-	while (final)
-	{
-		if (final->next == NULL)
-			break ;
+	while (final && final->next)
 		final = final->next;
+	sh->last_status = 0;
+	i = 1;
+	while (args[i])
+	{
+		ret = ft_export_process(head, final, args[i]);
+		if (ret != 0)
+			sh->last_status = 1;
+		if (final && final->next)
+			final = final->next;
+		i++;
 	}
-	sh->last_status = ft_export_process(head, final, var);
 }

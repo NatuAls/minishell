@@ -1,12 +1,15 @@
 # Prerequisites
 *.d
-
+readline.supp
+.vscode/
+/test
 # Object files
 *.o
 *.ko
 *.obj
 *.elf
-
+#tester
+/tester
 # Linker output
 *.ilk
 *.map
